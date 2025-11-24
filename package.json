@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx watch src/main.ts",
+    "dev": "tsx watch src/main.ts | pino-pretty",
     "build": "tsc",
     "start": "node dist/main.js",
     "test": "vitest",
@@ -17,6 +17,7 @@
   "dependencies": {
     "@fastify/cors": "^11.1.0",
     "@fastify/multipart": "^9.3.0",
+    "@google-cloud/vision": "^5.3.4",
     "bullmq": "^5.64.1",
     "dotenv": "^17.2.3",
     "fast-levenshtein": "^3.0.0",
@@ -34,5 +35,6 @@
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
     "vitest": "^4.0.13"
-  }
+  },
+  "packageManager": "pnpm@10.21.0+sha512.da3337267e400fdd3d479a6c68079ac6db01d8ca4f67572083e722775a796788a7a9956613749e000fac20d424b594f7a791a5f4e2e13581c5ef947f26968a40"
 }

@@ -1,5 +1,6 @@
-import { IVerificationRepository } from "@core/interfaces/IVerificationRepository";
+import { IVerificationRepository } from "@core/ports/IVerificationRepository";
 import { VerificationRequest } from "@core/domain/VerificationRequest";
+import { logger } from "@infra/logger";
 
 export class InMemoryVerificationRepo implements IVerificationRepository {
   // mimic a database table in memory (ram)
@@ -7,8 +8,9 @@ export class InMemoryVerificationRepo implements IVerificationRepository {
 
   async save(request: VerificationRequest): Promise<void> {
     this.db.set(request.id, request);
-    console.log(
-      `[Database] Registro salvo: ${request.id} - Status: ${request.status}`
+    logger.info(
+      { verificationId: request.id, status: request.status },
+      "Registro salvo no banco em memória"
     );
   }
 

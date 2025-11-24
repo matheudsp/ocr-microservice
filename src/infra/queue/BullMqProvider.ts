@@ -2,17 +2,19 @@ import { Queue } from "bullmq";
 import {
   IQueueProvider,
   VerificationJobData,
-} from "@core/interfaces/IQueueProvider";
-
+} from "@core/ports/IQueueProvider";
+import { logger } from "@infra/logger";
+import { env } from "../../config/env";
 export class BullMqProvider implements IQueueProvider {
   private queue: Queue;
+  private readonly serviceName: string = "BullQueue";
 
   constructor(queueName: string) {
     this.queue = new Queue(queueName, {
       connection: {
-        host: process.env.REDIS_HOST || "localhost",
-        port: Number(process.env.REDIS_PORT) || 6379,
-        password: process.env.REDIS_PASSWORD || undefined,
+        host: env.REDIS_HOST,
+        port: env.REDIS_PORT,
+        password: env.REDIS_PASSWORD,
       },
     });
   }
@@ -25,9 +27,9 @@ export class BullMqProvider implements IQueueProvider {
         delay: 1000,
       },
     });
-    console.log(
-      `[Queue] Job adicionado na fila ${queueName}:`,
-      data.verificationId
+    logger.info(
+      { service: this.serviceName },
+      `Job adicionado na fila ${queueName}: ${data.verificationId}`
     );
   }
 }

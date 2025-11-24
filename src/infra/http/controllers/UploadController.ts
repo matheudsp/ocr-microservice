@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { z } from "zod";
-import { RequestVerification } from "@core/use-cases/RequestVerification";
+import { RequestVerification } from "@core/usecases/RequestVerification";
 import { DocumentType } from "@core/dtos/verification.dto";
 
 const metadataSchema = z.object({

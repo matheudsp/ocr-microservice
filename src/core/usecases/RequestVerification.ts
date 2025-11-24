@@ -1,8 +1,8 @@
 import { VerificationRequest } from "../domain/VerificationRequest";
 import { DocumentType, ExpectedData } from "../dtos/verification.dto";
-import { IQueueProvider } from "../interfaces/IQueueProvider";
-import { IStorageProvider } from "../interfaces/IStorageProvider";
-import { IVerificationRepository } from "../interfaces/IVerificationRepository";
+import { IQueueProvider } from "../ports/IQueueProvider";
+import { IStorageProvider } from "../ports/IStorageProvider";
+import { IVerificationRepository } from "../ports/IVerificationRepository";
 
 interface RequestVerificationInput {
   file: {

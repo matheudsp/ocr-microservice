@@ -36,3 +36,5 @@ __snapshots__/
 # Arquivos Temporários do Tesseract
 *.traineddata
 
+
+gcp-keys.json

@@ -1,20 +1,28 @@
 import { Worker } from "bullmq";
-
 import { MinioStorageProvider } from "@infra/storage/MinioStorageProvider";
 import { TesseractOcrProvider } from "@infra/ocr/TesseractOcrProvider";
+import { GoogleVisionOcrProvider } from "@infra/ocr/GoogleVisionOcrProvider";
 import { InMemoryVerificationRepo } from "@infra/database/InMemoryVerificationRepo";
-import { ProcessVerification } from "@core/use-cases/ProcessVerification";
-
-console.log("worker script loaded (called in main bc shared memory)");
+import { ProcessVerification } from "@core/usecases/ProcessVerification";
+import { logger } from "@infra/logger";
 
 export const createWorker = (
   repo: InMemoryVerificationRepo,
   storage: MinioStorageProvider
 ) => {
-  const ocrProvider = new TesseractOcrProvider();
+  const useGoogle = process.env.USE_GOOGLE_VISION === "true";
+
+  const ocrProvider = useGoogle
+    ? new GoogleVisionOcrProvider()
+    : new TesseractOcrProvider();
+
+  logger.info(
+    { provider: useGoogle ? "GoogleVision" : "Tesseract" },
+    "Worker iniciado"
+  );
 
   const config = {
-    bucketName: process.env.MINIO_BUCKET_PENDING || "pending-docs",
+    bucketName: process.env.MINIO_BUCKET || "docs",
     similarityThreshold: Number(process.env.OCR_THRESHOLD) || 0.7,
   };
 
@@ -28,7 +36,10 @@ export const createWorker = (
   const worker = new Worker(
     "ocr-processing-queue",
     async (job) => {
-      console.log(`[Worker] Processando job ${job.id}`);
+      logger.info(
+        { jobId: job.id, verificationId: job.data.verificationId },
+        "Processando job"
+      );
 
       await processVerification.execute({
         verificationId: job.data.verificationId,
@@ -41,16 +52,16 @@ export const createWorker = (
         port: Number(process.env.REDIS_PORT) || 6379,
         password: process.env.REDIS_PASSWORD || undefined,
       },
-      concurrency: 1, // (heavy cpu-bound) - accept only one in queue
+      concurrency: 1,
     }
   );
 
   worker.on("completed", (job) => {
-    console.log(`[Worker] Job ${job.id} finalizado com sucesso!`);
+    logger.info({ jobId: job.id }, "Job finalizado com sucesso");
   });
 
   worker.on("failed", (job, err) => {
-    console.error(`[Worker] Job ${job?.id} falhou:`, err);
+    logger.error({ jobId: job?.id, err }, "Job falhou");
   });
 
   return worker;

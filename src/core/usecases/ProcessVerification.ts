@@ -1,11 +1,12 @@
 import levenshtein from "fast-levenshtein";
-import { IVerificationRepository } from "../interfaces/IVerificationRepository";
-import { IStorageProvider } from "../interfaces/IStorageProvider";
-import { IOcrProvider } from "../interfaces/IOcrProvider";
+import { IVerificationRepository } from "../ports/IVerificationRepository";
+import { IStorageProvider } from "../ports/IStorageProvider";
+import { IOcrProvider } from "../ports/IOcrProvider";
 import {
   VerificationResult,
   VerificationConfig,
 } from "../dtos/verification.dto";
+import { logger } from "@infra/logger";
 
 interface ProcessVerificationInput {
   verificationId: string;
@@ -13,6 +14,7 @@ interface ProcessVerificationInput {
 }
 
 export class ProcessVerification {
+  private readonly serviceName: string = "ProcessVerification";
   constructor(
     private verificationRepo: IVerificationRepository,
     private storageProvider: IStorageProvider,
@@ -47,11 +49,14 @@ export class ProcessVerification {
       request.complete(result);
       await this.verificationRepo.save(request);
 
-      console.log(
-        `✅ Verificação ${verificationId} concluída. Score: ${result.confidenceScore}`
+      logger.info(
+        `Verificacao ${verificationId} concluida. Score: ${result.confidenceScore}`
       );
     } catch (error) {
-      console.error(`❌ Falha na verificação ${verificationId}`, error);
+      logger.error(
+        { service: this.serviceName, err: error },
+        `Falha na verificacao ${verificationId}`
+      );
       request.fail();
       await this.verificationRepo.update(request);
     }

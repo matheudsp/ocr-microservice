@@ -27,9 +27,7 @@ services:
     entrypoint: >
       /bin/sh -c "
       /usr/bin/mc alias set myminio http://minio:9000 admin password123;
-      /usr/bin/mc mb myminio/pending-docs;
-      /usr/bin/mc mb myminio/approved-docs;
-      /usr/bin/mc mb myminio/rejected-docs;
+      /usr/bin/mc mb myminio/docs;
       exit 0;
       "
 

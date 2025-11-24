@@ -2,6 +2,7 @@ export enum DocumentType {
   RG_FRENTE = "RG_FRENTE",
   RG_VERSO = "RG_VERSO",
   CNH = "CNH",
+  CPF = "CPF",
   COMPROVANTE_RENDA = "COMPROVANTE_RENDA",
 }
 

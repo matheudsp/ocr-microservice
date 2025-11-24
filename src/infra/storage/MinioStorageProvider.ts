@@ -1,5 +1,5 @@
 import * as Minio from "minio";
-import { IStorageProvider } from "@core/interfaces/IStorageProvider";
+import { IStorageProvider } from "@core/ports/IStorageProvider";
 
 export class MinioStorageProvider implements IStorageProvider {
   private client: Minio.Client;
