@@ -8,9 +8,9 @@ import { MinioStorageProvider } from "@infra/storage/MinioStorageProvider";
 // import { InMemoryVerificationRepo } from "@infra/database/InMemoryVerificationRepo";
 import { PrismaVerificationRepo } from "@infra/database/PrismaVerificationRepo";
 import { BullMqProvider } from "@infra/queue/BullMqProvider";
-import { RequestVerification } from "@core/usecases/RequestVerification";
 import { UploadController } from "@infra/http/controllers/UploadController";
 import { createWorker } from "./worker";
+import { RequestVerificationUsecase } from "@core/usecases/RequestVerificationUsecase";
 
 const server = Fastify({
   logger: loggerOptions,
@@ -24,7 +24,7 @@ const storageProvider = new MinioStorageProvider();
 const repository = new PrismaVerificationRepo();
 const queueProvider = new BullMqProvider("ocr-processing-queue");
 
-const requestVerificationUseCase = new RequestVerification(
+const requestVerificationUseCase = new RequestVerificationUsecase(
   storageProvider,
   repository,
   queueProvider,

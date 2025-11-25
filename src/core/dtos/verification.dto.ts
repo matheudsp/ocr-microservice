@@ -21,10 +21,6 @@ export interface ExpectedData {
 
 export interface VerificationResult {
   confidenceScore: number; // 0 ~ 100
-  extractedText: string;
-  matchedName: boolean;
-  matchedCpf: boolean;
-  details?: string;
 }
 
 export interface VerificationConfig {

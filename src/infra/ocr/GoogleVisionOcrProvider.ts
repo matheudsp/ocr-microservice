@@ -2,12 +2,13 @@ import { ImageAnnotatorClient } from "@google-cloud/vision";
 import { IOcrProvider } from "@core/ports/IOcrProvider";
 import { logger } from "@infra/logger";
 import fs from "fs";
+import { env } from "@infra/config/env";
 
 export class GoogleVisionOcrProvider implements IOcrProvider {
   private readonly client: ImageAnnotatorClient;
-  private readonly serviceName: string = "GoogleVisionProvider";
+  private readonly serviceName: string = GoogleVisionOcrProvider.name;
   constructor() {
-    const keyPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+    const keyPath = env.GOOGLE_APPLICATION_CREDENTIALS;
     if (!keyPath || !fs.existsSync(keyPath)) {
       throw new Error(
         `[${this.serviceName}] Arquivo de credenciais não encontrado em: ${keyPath}`
@@ -40,7 +41,7 @@ export class GoogleVisionOcrProvider implements IOcrProvider {
       return detections[0].description || "";
     } catch (error) {
       logger.error(
-        { service: this.serviceName, err: error },
+        { provider: this.serviceName, err: error },
         "Falha na comunicação com Google Vision API"
       );
       throw new Error("Falha ao processar imagem via OCR");

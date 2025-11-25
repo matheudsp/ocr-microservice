@@ -14,14 +14,21 @@ enum VerificationStatus {
   FAILED
 }
 
+enum DocumentType {
+  RG_FRENTE
+  RG_VERSO
+  CPF
+  CNH
+  COMPROVANTE_RENDA
+}
+
 model VerificationRequest {
   id                String             @id @default(uuid())
   externalReference String?
-  documentType      String
+  documentType      DocumentType
   fileKey           String
-  expectedData      Json
   status            VerificationStatus
-  result            Json?
+  confidenceScore   Int?
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
 

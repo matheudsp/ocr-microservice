@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { z } from "zod";
-import { RequestVerification } from "@core/usecases/RequestVerification";
+import { RequestVerificationUsecase } from "@core/usecases/RequestVerificationUsecase";
 import { DocumentType } from "@core/dtos/verification.dto";
 
 const metadataSchema = z.object({
@@ -14,7 +14,7 @@ const metadataSchema = z.object({
 });
 
 export class UploadController {
-  constructor(private requestVerificationUseCase: RequestVerification) {}
+  constructor(private requestVerificationUseCase: RequestVerificationUsecase) {}
 
   async handle(req: FastifyRequest, reply: FastifyReply) {
     let fileBuffer: Buffer | undefined;

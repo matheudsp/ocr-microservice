@@ -1,31 +1,18 @@
 import { IVerificationRepository } from "@core/ports/IVerificationRepository";
 import { VerificationRequest } from "@core/domain/VerificationRequest";
 import { prisma } from "../config/prisma/prisma";
-import { Prisma } from "../config/prisma/generated/client";
-import {
-  DocumentType,
-  ExpectedData,
-  VerificationStatus,
-  VerificationResult,
-} from "@core/dtos/verification.dto";
+import { VerificationStatus, DocumentType } from "@core/dtos/verification.dto";
 
 export class PrismaVerificationRepo implements IVerificationRepository {
   async save(request: VerificationRequest): Promise<void> {
-    await prisma.verificationRequest.upsert({
-      where: { id: request.id },
-      update: {
-        status: request.status,
-        result: (request.result as unknown as Prisma.InputJsonValue) ?? null,
-        updatedAt: request.updatedAt,
-      },
-      create: {
+    await prisma.verificationRequest.create({
+      data: {
         id: request.id,
         externalReference: request.externalReference,
-        documentType: request.documentType,
+        documentType: request.documentType as DocumentType,
         fileKey: request.fileKey,
-        expectedData: request.expectedData as unknown as Prisma.InputJsonValue,
-        status: request.status,
-        result: (request.result as unknown as Prisma.InputJsonValue) ?? null,
+        status: request.status as VerificationStatus,
+        confidenceScore: request.confidenceScore ?? 0,
         createdAt: request.createdAt,
         updatedAt: request.updatedAt,
       },
@@ -44,11 +31,8 @@ export class PrismaVerificationRepo implements IVerificationRepository {
       externalReference: raw.externalReference!,
       documentType: raw.documentType as DocumentType,
       fileKey: raw.fileKey,
-      expectedData: raw.expectedData as unknown as ExpectedData,
       status: raw.status as VerificationStatus,
-      result: raw.result
-        ? (raw.result as unknown as VerificationResult)
-        : undefined,
+      confidenceScore: raw.confidenceScore,
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,
     });
@@ -58,8 +42,8 @@ export class PrismaVerificationRepo implements IVerificationRepository {
     await prisma.verificationRequest.update({
       where: { id: request.id },
       data: {
-        status: request.status,
-        result: (request.result as unknown as Prisma.InputJsonValue) ?? null,
+        status: request.status as any,
+        confidenceScore: request.confidenceScore ?? 0,
         updatedAt: new Date(),
       },
     });

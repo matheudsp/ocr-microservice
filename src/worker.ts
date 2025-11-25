@@ -3,31 +3,36 @@ import { MinioStorageProvider } from "@infra/storage/MinioStorageProvider";
 import { TesseractOcrProvider } from "@infra/ocr/TesseractOcrProvider";
 import { GoogleVisionOcrProvider } from "@infra/ocr/GoogleVisionOcrProvider";
 // import { InMemoryVerificationRepo } from "@infra/database/InMemoryVerificationRepo";
-import { ProcessVerification } from "@core/usecases/ProcessVerification";
+import { ProcessVerificationUsecase } from "@core/usecases/ProcessVerificationUsecase";
 import { logger } from "@infra/logger";
 import { IVerificationRepository } from "@core/ports/IVerificationRepository";
+import { env } from "@infra/config/env";
 
 export const createWorker = (
   repo: IVerificationRepository,
   storage: MinioStorageProvider
 ) => {
-  const useGoogle = process.env.USE_GOOGLE_VISION === "true";
+  const useGoogle = env.USE_GOOGLE_VISION;
 
   const ocrProvider = useGoogle
     ? new GoogleVisionOcrProvider()
     : new TesseractOcrProvider();
 
   logger.info(
-    { provider: useGoogle ? "GoogleVision" : "Tesseract" },
+    {
+      provider: useGoogle
+        ? GoogleVisionOcrProvider.name
+        : TesseractOcrProvider.name,
+    },
     "Worker iniciado"
   );
 
   const config = {
-    bucketName: process.env.MINIO_BUCKET || "docs",
-    similarityThreshold: Number(process.env.OCR_THRESHOLD) || 0.7,
+    bucketName: env.MINIO_BUCKET,
+    similarityThreshold: env.OCR_THRESHOLD,
   };
 
-  const processVerification = new ProcessVerification(
+  const processVerification = new ProcessVerificationUsecase(
     repo,
     storage,
     ocrProvider,
@@ -45,13 +50,14 @@ export const createWorker = (
       await processVerification.execute({
         verificationId: job.data.verificationId,
         fileKey: job.data.fileKey,
+        expectedData: job.data.expectedData,
       });
     },
     {
       connection: {
-        host: process.env.REDIS_HOST || "localhost",
-        port: Number(process.env.REDIS_PORT) || 6379,
-        password: process.env.REDIS_PASSWORD || undefined,
+        host: env.REDIS_HOST,
+        port: env.REDIS_PORT,
+        password: env.REDIS_PASSWORD,
       },
       concurrency: 1,
     }

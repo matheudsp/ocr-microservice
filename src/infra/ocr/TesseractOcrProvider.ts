@@ -3,7 +3,7 @@ import { IOcrProvider } from "@core/ports/IOcrProvider";
 import { logger } from "@infra/logger";
 
 export class TesseractOcrProvider implements IOcrProvider {
-  private readonly serviceName: string = "TesseractProvider";
+  private readonly serviceName: string = TesseractOcrProvider.name;
 
   async extractText(imageBuffer: Buffer): Promise<string> {
     try {
@@ -14,7 +14,7 @@ export class TesseractOcrProvider implements IOcrProvider {
 
       return result.data.text;
     } catch (error) {
-      logger.error({ service: this.serviceName, err: error }, "Erro no OCR");
+      logger.error({ provider: this.serviceName, err: error }, "Erro no OCR");
       throw new Error("Falha ao processar imagem via OCR");
     }
   }

@@ -5,16 +5,18 @@ import { IOcrProvider } from "../ports/IOcrProvider";
 import {
   VerificationResult,
   VerificationConfig,
+  ExpectedData,
 } from "../dtos/verification.dto";
 import { logger } from "@infra/logger";
 
 interface ProcessVerificationInput {
   verificationId: string;
   fileKey: string;
+  expectedData: ExpectedData;
 }
 
-export class ProcessVerification {
-  private readonly serviceName: string = "ProcessVerification";
+export class ProcessVerificationUsecase {
+  private readonly serviceName: string = ProcessVerificationUsecase.name;
   constructor(
     private verificationRepo: IVerificationRepository,
     private storageProvider: IStorageProvider,
@@ -23,7 +25,7 @@ export class ProcessVerification {
   ) {}
 
   async execute(input: ProcessVerificationInput): Promise<void> {
-    const { verificationId, fileKey } = input;
+    const { verificationId, fileKey, expectedData } = input;
 
     const request = await this.verificationRepo.findById(verificationId);
     if (!request) {
@@ -41,33 +43,39 @@ export class ProcessVerification {
 
       const extractedText = await this.ocrProvider.extractText(fileBuffer);
 
-      const result = this.calculateConfidence(
+      const { confidenceScore } = this.calculateConfidence(
         extractedText,
-        request.expectedData
+        expectedData
       );
 
-      request.complete(result);
+      request.complete(confidenceScore);
       await this.verificationRepo.update(request);
 
       logger.info(
-        `Verificacao ${verificationId} concluida. Score: ${result.confidenceScore}`
+        `Verificação ${verificationId} concluída. Score: ${confidenceScore}`
       );
     } catch (error) {
       logger.error(
-        { service: this.serviceName, err: error },
+        { usecase: this.serviceName, err: error },
         `Falha na verificacao ${verificationId}`
       );
       request.fail();
       await this.verificationRepo.update(request);
     }
   }
-
+  private normalizeText(text: string): string {
+    return text
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toUpperCase()
+      .trim();
+  }
   private calculateConfidence(
     rawText: string,
-    expected: { name: string; cpf: string }
+    expected: ExpectedData
   ): VerificationResult {
-    const cleanRawText = rawText.toUpperCase();
-    const cleanExpectedName = expected.name.toUpperCase();
+    const cleanRawText = this.normalizeText(rawText);
+    const cleanExpectedName = this.normalizeText(expected.name);
 
     const nameSimilarity = this.calculateSimilarity(
       cleanExpectedName,
@@ -89,9 +97,6 @@ export class ProcessVerification {
 
     return {
       confidenceScore: finalScore,
-      extractedText: rawText.slice(0, 200) + "...",
-      matchedName: isNameValid,
-      matchedCpf: cpfFound,
     };
   }
 

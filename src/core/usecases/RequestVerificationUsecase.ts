@@ -11,7 +11,7 @@ interface RequestVerificationInput {
     mimetype: string;
   };
   metadata: {
-    userId: string;
+    externalReference?: string;
     documentType: DocumentType;
     expectedData: ExpectedData;
   };
@@ -22,7 +22,8 @@ interface RequestVerificationOutput {
   status: string;
 }
 
-export class RequestVerification {
+export class RequestVerificationUsecase {
+  // private readonly serviceName: string = RequestVerificationUsecase.name;
   constructor(
     private storageProvider: IStorageProvider,
     private verificationRepo: IVerificationRepository,
@@ -45,10 +46,10 @@ export class RequestVerification {
     );
 
     const verificationRequest = VerificationRequest.create(
-      metadata.userId,
       metadata.documentType,
       fileKey,
-      metadata.expectedData
+
+      metadata.externalReference
     );
 
     await this.verificationRepo.save(verificationRequest);
@@ -56,6 +57,7 @@ export class RequestVerification {
     await this.queueProvider.addJob("ocr-processing-queue", {
       verificationId: verificationRequest.id,
       fileKey: verificationRequest.fileKey,
+      expectedData: metadata.expectedData,
     });
 
     return {

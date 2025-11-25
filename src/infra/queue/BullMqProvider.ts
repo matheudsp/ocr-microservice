@@ -7,7 +7,7 @@ import { logger } from "@infra/logger";
 import { env } from "../config/env";
 export class BullMqProvider implements IQueueProvider {
   private queue: Queue;
-  private readonly serviceName: string = "BullQueue";
+  private readonly serviceName: string = BullMqProvider.name;
 
   constructor(queueName: string) {
     this.queue = new Queue(queueName, {
@@ -28,7 +28,7 @@ export class BullMqProvider implements IQueueProvider {
       },
     });
     logger.info(
-      { service: this.serviceName },
+      { provider: this.serviceName },
       `Job adicionado na fila ${queueName}: ${data.verificationId}`
     );
   }

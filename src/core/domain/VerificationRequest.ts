@@ -1,19 +1,13 @@
 import { randomUUID } from "crypto";
-import {
-  DocumentType,
-  ExpectedData,
-  VerificationResult,
-  VerificationStatus,
-} from "../dtos/verification.dto";
+import { DocumentType, VerificationStatus } from "../dtos/verification.dto";
 
 export interface VerificationRequestProps {
   id: string;
   externalReference?: string;
   documentType: DocumentType;
   fileKey: string;
-  expectedData: ExpectedData;
   status: VerificationStatus;
-  result?: VerificationResult;
+  confidenceScore?: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -23,10 +17,9 @@ export class VerificationRequest {
   public readonly externalReference?: string;
   public readonly documentType: DocumentType;
   public readonly fileKey: string;
-  public readonly expectedData: ExpectedData;
   public status: VerificationStatus;
-  public result?: VerificationResult;
-  public createdAt: Date;
+  public confidenceScore?: number;
+  public readonly createdAt: Date;
   public updatedAt: Date;
 
   private constructor(props: VerificationRequestProps) {
@@ -34,25 +27,22 @@ export class VerificationRequest {
     this.externalReference = props.externalReference;
     this.documentType = props.documentType;
     this.fileKey = props.fileKey;
-    this.expectedData = props.expectedData;
     this.status = props.status;
-    this.result = props.result;
+    this.confidenceScore = props.confidenceScore;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
   }
 
   static create(
-    externalReference: string,
     documentType: DocumentType,
     fileKey: string,
-    expectedData: ExpectedData
+    externalReference?: string
   ): VerificationRequest {
     return new VerificationRequest({
       id: randomUUID(),
       externalReference,
       documentType,
       fileKey,
-      expectedData,
       status: VerificationStatus.PENDING,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -71,8 +61,8 @@ export class VerificationRequest {
     this.updatedAt = new Date();
   }
 
-  complete(result: VerificationResult): void {
-    this.result = result;
+  complete(score: number): void {
+    this.confidenceScore = score;
     this.status = VerificationStatus.COMPLETED;
     this.updatedAt = new Date();
   }

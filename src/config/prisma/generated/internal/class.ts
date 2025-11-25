@@ -20,7 +20,7 @@ const config: runtime.GetPrismaClientConfig = {
   "clientVersion": "7.0.0",
   "engineVersion": "0c19ccc313cf9911a90d99d2ac2eb0280c76c513",
   "activeProvider": "postgresql",
-  "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../src/infra/config/prisma/generated\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nenum VerificationStatus {\n  PENDING\n  PROCESSING\n  COMPLETED\n  FAILED\n}\n\nenum DocumentType {\n  RG_FRENTE\n  RG_VERSO\n  CPF\n  CNH\n  COMPROVANTE_RENDA\n}\n\nmodel VerificationRequest {\n  id                String             @id @default(uuid())\n  externalReference String?\n  documentType      String\n  fileKey           String\n  status            VerificationStatus\n  confidenceScore   Int\n  createdAt         DateTime           @default(now())\n  updatedAt         DateTime           @updatedAt\n\n  @@map(\"verification_requests\")\n}\n",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../src/config/prisma/generated\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nenum VerificationStatus {\n  PENDING\n  PROCESSING\n  COMPLETED\n  FAILED\n}\n\nenum DocumentType {\n  RG_FRENTE\n  RG_VERSO\n  CPF\n  CNH\n  COMPROVANTE_RENDA\n}\n\nmodel VerificationRequest {\n  id                String             @id @default(uuid())\n  externalReference String?\n  documentType      DocumentType\n  fileKey           String\n  expectedData      Json\n  status            VerificationStatus\n  result            Json?\n  createdAt         DateTime           @default(now())\n  updatedAt         DateTime           @updatedAt\n\n  @@map(\"verification_requests\")\n}\n",
   "runtimeDataModel": {
     "models": {},
     "enums": {},
@@ -28,7 +28,7 @@ const config: runtime.GetPrismaClientConfig = {
   }
 }
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"VerificationRequest\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"externalReference\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"documentType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"fileKey\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"VerificationStatus\"},{\"name\":\"confidenceScore\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"verification_requests\"}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"VerificationRequest\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"externalReference\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"documentType\",\"kind\":\"enum\",\"type\":\"DocumentType\"},{\"name\":\"fileKey\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expectedData\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"VerificationStatus\"},{\"name\":\"result\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"verification_requests\"}},\"enums\":{},\"types\":{}}")
 
 async function decodeBase64AsWasm(wasmBase64: string): Promise<WebAssembly.Module> {
   const { Buffer } = await import('node:buffer')
