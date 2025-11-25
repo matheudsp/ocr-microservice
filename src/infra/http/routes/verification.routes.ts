@@ -1,9 +1,11 @@
-// src/infra/http/routes/verification.routes.ts
 import { FastifyInstance } from "fastify";
 import { VerificationModule } from "../modules/verification.module";
 
 export async function verificationRoutes(app: FastifyInstance) {
-  const { uploadController, getVerificationController } = VerificationModule();
+  const { uploadController, getVerificationController, verifyApiKey } =
+    VerificationModule();
+
+  app.addHook("preHandler", verifyApiKey);
 
   app.post("/verification", (req, reply) =>
     uploadController.handle(req, reply)

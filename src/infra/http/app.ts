@@ -2,6 +2,7 @@ import Fastify from "fastify";
 import multipart from "@fastify/multipart";
 import { loggerOptions } from "@infra/config/logger";
 import { verificationRoutes } from "./routes/verification.routes";
+import { adminRoutes } from "./routes/admin.routes";
 
 export const buildApp = () => {
   const app = Fastify({
@@ -13,6 +14,7 @@ export const buildApp = () => {
   });
 
   app.register(verificationRoutes);
+  app.register(adminRoutes);
 
   return app;
 };

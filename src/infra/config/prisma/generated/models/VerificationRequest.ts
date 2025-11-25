@@ -37,7 +37,7 @@ export type VerificationRequestSumAggregateOutputType = {
 export type VerificationRequestMinAggregateOutputType = {
   id: string | null
   externalReference: string | null
-  documentType: string | null
+  documentType: $Enums.DocumentType | null
   fileKey: string | null
   status: $Enums.VerificationStatus | null
   confidenceScore: number | null
@@ -48,7 +48,7 @@ export type VerificationRequestMinAggregateOutputType = {
 export type VerificationRequestMaxAggregateOutputType = {
   id: string | null
   externalReference: string | null
-  documentType: string | null
+  documentType: $Enums.DocumentType | null
   fileKey: string | null
   status: $Enums.VerificationStatus | null
   confidenceScore: number | null
@@ -200,10 +200,10 @@ export type VerificationRequestGroupByArgs<ExtArgs extends runtime.Types.Extensi
 export type VerificationRequestGroupByOutputType = {
   id: string
   externalReference: string | null
-  documentType: string
+  documentType: $Enums.DocumentType
   fileKey: string
   status: $Enums.VerificationStatus
-  confidenceScore: number
+  confidenceScore: number | null
   createdAt: Date
   updatedAt: Date
   _count: VerificationRequestCountAggregateOutputType | null
@@ -234,10 +234,10 @@ export type VerificationRequestWhereInput = {
   NOT?: Prisma.VerificationRequestWhereInput | Prisma.VerificationRequestWhereInput[]
   id?: Prisma.StringFilter<"VerificationRequest"> | string
   externalReference?: Prisma.StringNullableFilter<"VerificationRequest"> | string | null
-  documentType?: Prisma.StringFilter<"VerificationRequest"> | string
+  documentType?: Prisma.EnumDocumentTypeFilter<"VerificationRequest"> | $Enums.DocumentType
   fileKey?: Prisma.StringFilter<"VerificationRequest"> | string
   status?: Prisma.EnumVerificationStatusFilter<"VerificationRequest"> | $Enums.VerificationStatus
-  confidenceScore?: Prisma.IntFilter<"VerificationRequest"> | number
+  confidenceScore?: Prisma.IntNullableFilter<"VerificationRequest"> | number | null
   createdAt?: Prisma.DateTimeFilter<"VerificationRequest"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"VerificationRequest"> | Date | string
 }
@@ -248,7 +248,7 @@ export type VerificationRequestOrderByWithRelationInput = {
   documentType?: Prisma.SortOrder
   fileKey?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  confidenceScore?: Prisma.SortOrder
+  confidenceScore?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -259,10 +259,10 @@ export type VerificationRequestWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.VerificationRequestWhereInput[]
   NOT?: Prisma.VerificationRequestWhereInput | Prisma.VerificationRequestWhereInput[]
   externalReference?: Prisma.StringNullableFilter<"VerificationRequest"> | string | null
-  documentType?: Prisma.StringFilter<"VerificationRequest"> | string
+  documentType?: Prisma.EnumDocumentTypeFilter<"VerificationRequest"> | $Enums.DocumentType
   fileKey?: Prisma.StringFilter<"VerificationRequest"> | string
   status?: Prisma.EnumVerificationStatusFilter<"VerificationRequest"> | $Enums.VerificationStatus
-  confidenceScore?: Prisma.IntFilter<"VerificationRequest"> | number
+  confidenceScore?: Prisma.IntNullableFilter<"VerificationRequest"> | number | null
   createdAt?: Prisma.DateTimeFilter<"VerificationRequest"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"VerificationRequest"> | Date | string
 }, "id">
@@ -273,7 +273,7 @@ export type VerificationRequestOrderByWithAggregationInput = {
   documentType?: Prisma.SortOrder
   fileKey?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  confidenceScore?: Prisma.SortOrder
+  confidenceScore?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.VerificationRequestCountOrderByAggregateInput
@@ -289,10 +289,10 @@ export type VerificationRequestScalarWhereWithAggregatesInput = {
   NOT?: Prisma.VerificationRequestScalarWhereWithAggregatesInput | Prisma.VerificationRequestScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"VerificationRequest"> | string
   externalReference?: Prisma.StringNullableWithAggregatesFilter<"VerificationRequest"> | string | null
-  documentType?: Prisma.StringWithAggregatesFilter<"VerificationRequest"> | string
+  documentType?: Prisma.EnumDocumentTypeWithAggregatesFilter<"VerificationRequest"> | $Enums.DocumentType
   fileKey?: Prisma.StringWithAggregatesFilter<"VerificationRequest"> | string
   status?: Prisma.EnumVerificationStatusWithAggregatesFilter<"VerificationRequest"> | $Enums.VerificationStatus
-  confidenceScore?: Prisma.IntWithAggregatesFilter<"VerificationRequest"> | number
+  confidenceScore?: Prisma.IntNullableWithAggregatesFilter<"VerificationRequest"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"VerificationRequest"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"VerificationRequest"> | Date | string
 }
@@ -300,10 +300,10 @@ export type VerificationRequestScalarWhereWithAggregatesInput = {
 export type VerificationRequestCreateInput = {
   id?: string
   externalReference?: string | null
-  documentType: string
+  documentType: $Enums.DocumentType
   fileKey: string
   status: $Enums.VerificationStatus
-  confidenceScore: number
+  confidenceScore?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -311,10 +311,10 @@ export type VerificationRequestCreateInput = {
 export type VerificationRequestUncheckedCreateInput = {
   id?: string
   externalReference?: string | null
-  documentType: string
+  documentType: $Enums.DocumentType
   fileKey: string
   status: $Enums.VerificationStatus
-  confidenceScore: number
+  confidenceScore?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -322,10 +322,10 @@ export type VerificationRequestUncheckedCreateInput = {
 export type VerificationRequestUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   externalReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  documentType?: Prisma.StringFieldUpdateOperationsInput | string
+  documentType?: Prisma.EnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType
   fileKey?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
-  confidenceScore?: Prisma.IntFieldUpdateOperationsInput | number
+  confidenceScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -333,10 +333,10 @@ export type VerificationRequestUpdateInput = {
 export type VerificationRequestUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   externalReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  documentType?: Prisma.StringFieldUpdateOperationsInput | string
+  documentType?: Prisma.EnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType
   fileKey?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
-  confidenceScore?: Prisma.IntFieldUpdateOperationsInput | number
+  confidenceScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -344,10 +344,10 @@ export type VerificationRequestUncheckedUpdateInput = {
 export type VerificationRequestCreateManyInput = {
   id?: string
   externalReference?: string | null
-  documentType: string
+  documentType: $Enums.DocumentType
   fileKey: string
   status: $Enums.VerificationStatus
-  confidenceScore: number
+  confidenceScore?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -355,10 +355,10 @@ export type VerificationRequestCreateManyInput = {
 export type VerificationRequestUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   externalReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  documentType?: Prisma.StringFieldUpdateOperationsInput | string
+  documentType?: Prisma.EnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType
   fileKey?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
-  confidenceScore?: Prisma.IntFieldUpdateOperationsInput | number
+  confidenceScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -366,10 +366,10 @@ export type VerificationRequestUpdateManyMutationInput = {
 export type VerificationRequestUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   externalReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  documentType?: Prisma.StringFieldUpdateOperationsInput | string
+  documentType?: Prisma.EnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType
   fileKey?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
-  confidenceScore?: Prisma.IntFieldUpdateOperationsInput | number
+  confidenceScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -423,12 +423,16 @@ export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
 }
 
+export type EnumDocumentTypeFieldUpdateOperationsInput = {
+  set?: $Enums.DocumentType
+}
+
 export type EnumVerificationStatusFieldUpdateOperationsInput = {
   set?: $Enums.VerificationStatus
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
   increment?: number
   decrement?: number
   multiply?: number
@@ -493,10 +497,10 @@ export type $VerificationRequestPayload<ExtArgs extends runtime.Types.Extensions
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     externalReference: string | null
-    documentType: string
+    documentType: $Enums.DocumentType
     fileKey: string
     status: $Enums.VerificationStatus
-    confidenceScore: number
+    confidenceScore: number | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["verificationRequest"]>
@@ -924,7 +928,7 @@ export interface Prisma__VerificationRequestClient<T, Null = never, ExtArgs exte
 export interface VerificationRequestFieldRefs {
   readonly id: Prisma.FieldRef<"VerificationRequest", 'String'>
   readonly externalReference: Prisma.FieldRef<"VerificationRequest", 'String'>
-  readonly documentType: Prisma.FieldRef<"VerificationRequest", 'String'>
+  readonly documentType: Prisma.FieldRef<"VerificationRequest", 'DocumentType'>
   readonly fileKey: Prisma.FieldRef<"VerificationRequest", 'String'>
   readonly status: Prisma.FieldRef<"VerificationRequest", 'VerificationStatus'>
   readonly confidenceScore: Prisma.FieldRef<"VerificationRequest", 'Int'>

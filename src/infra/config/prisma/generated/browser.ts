@@ -22,3 +22,8 @@ export * from './enums';
  * 
  */
 export type VerificationRequest = Prisma.VerificationRequestModel
+/**
+ * Model ApiKey
+ * 
+ */
+export type ApiKey = Prisma.ApiKeyModel

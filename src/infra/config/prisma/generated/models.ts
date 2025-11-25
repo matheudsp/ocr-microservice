@@ -9,4 +9,5 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/VerificationRequest'
+export type * from './models/ApiKey'
 export type * from './commonInputTypes'

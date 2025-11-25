@@ -34,3 +34,13 @@ model VerificationRequest {
 
   @@map("verification_requests")
 }
+
+model ApiKey {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  client    String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@map("api_keys")
+}

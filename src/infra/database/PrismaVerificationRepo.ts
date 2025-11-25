@@ -32,7 +32,7 @@ export class PrismaVerificationRepo implements IVerificationRepository {
       documentType: raw.documentType as DocumentType,
       fileKey: raw.fileKey,
       status: raw.status as VerificationStatus,
-      confidenceScore: raw.confidenceScore,
+      confidenceScore: raw.confidenceScore!,
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,
     });
@@ -54,7 +54,7 @@ export class PrismaVerificationRepo implements IVerificationRepository {
       documentType: raw.documentType as DocumentType,
       fileKey: raw.fileKey,
       status: raw.status as VerificationStatus,
-      confidenceScore: raw.confidenceScore,
+      confidenceScore: raw.confidenceScore!,
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,
     });
