@@ -1,6 +1,6 @@
 import { Worker } from "bullmq";
 import { MinioStorageProvider } from "@infra/storage/MinioStorageProvider";
-import { TesseractOcrProvider } from "@infra/ocr/TesseractOcrProvider";
+// import { TesseractOcrProvider } from "@infra/ocr/TesseractOcrProvider";
 import { GoogleVisionOcrProvider } from "@infra/ocr/GoogleVisionOcrProvider";
 // import { InMemoryVerificationRepo } from "@infra/database/InMemoryVerificationRepo";
 import { ProcessVerificationUsecase } from "@core/usecases/VerificationUseCase/ProcessVerificationUsecase";
@@ -13,17 +13,13 @@ export const createWorker = (
   repo: IVerificationRepository,
   storage: MinioStorageProvider
 ) => {
-  const useGoogle = env.USE_GOOGLE_VISION;
-
-  const ocrProvider = useGoogle
-    ? new GoogleVisionOcrProvider()
-    : new TesseractOcrProvider();
+  const ocrProvider = new GoogleVisionOcrProvider();
+  // : new TesseractOcrProvider();
 
   logger.info(
     {
-      provider: useGoogle
-        ? GoogleVisionOcrProvider.name
-        : TesseractOcrProvider.name,
+      provider: GoogleVisionOcrProvider.name,
+      // : TesseractOcrProvider.name,
     },
     "Worker iniciado"
   );

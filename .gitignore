@@ -36,8 +36,9 @@ __snapshots__/
 # Arquivos Temporários do Tesseract
 *.traineddata
 
-
 gcp-keys.json
+secrets/
+
 src/infra/config/prisma/generated
 ./src/infra/config/prisma/generated
 ./src/infra/config/prisma/generated/

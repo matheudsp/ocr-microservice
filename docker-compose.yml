@@ -7,6 +7,8 @@ services:
     command: redis-server --appendonly yes --requirepass "${REDIS_PASSWORD}"
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
+    networks:
+      - app-network
 
   minio:
     image: minio/minio
@@ -18,19 +20,10 @@ services:
       MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
       MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
     command: server /data --console-address ":9001"
+    networks:
+      - app-network
     volumes:
       - minio_data:/data
-
-  createbuckets:
-    image: minio/mc
-    depends_on:
-      - minio
-    entrypoint: >
-      /bin/sh -c "
-      /usr/bin/mc alias set myminio http://minio:9000 ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY};
-      /usr/bin/mc mb myminio/${MINIO_BUCKET};
-      exit 0;
-      "
 
   postgres:
     image: postgres:15-alpine
@@ -41,14 +34,52 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+    networks:
+      - app-network
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+
+  ocr-service:
+    image: ghcr.io/matheudsp/ocr-microservice:latest
+    container_name: ocr_service_app
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+      - minio
+    ports:
+      - "${PORT}:${PORT}"
+    networks:
+      - app-network
+
+    environment:
+      NODE_ENV: production
+      PORT: ${PORT}
+      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public"
+
+      # Redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+
+      # MinIO
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      MINIO_BUCKET: ${MINIO_BUCKET}
+
+      # App Config
+      OCR_THRESHOLD: ${OCR_THRESHOLD}
+      GOOGLE_APPLICATION_CREDENTIALS: /app/gcp-keys.json
+
+    volumes:
+      - ./secrets/gcp-keys.json:/app/gcp-keys.json:ro
 
 volumes:
   minio_data:
   postgres_data:
+
+networks:
+  app-network:
+    driver: bridge

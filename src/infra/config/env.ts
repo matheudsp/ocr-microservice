@@ -33,10 +33,10 @@ const envSchema = z.object({
     .transform((val) => val === "true"),
 
   // GCP
-  USE_GOOGLE_VISION: z
-    .string()
-    .default("false")
-    .transform((val) => val === "true"),
+  // USE_GOOGLE_VISION: z
+  //   .string()
+  //   .default("false")
+  //   .transform((val) => val === "true"),
 
   GOOGLE_APPLICATION_CREDENTIALS: z.string().optional(),
 

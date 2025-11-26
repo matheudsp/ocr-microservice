@@ -1,5 +1,5 @@
 {
-  "name": "ocr-service",
+  "name": "ocr-microservice",
   "type": "module",
   "version": "1.0.0",
   "main": "index.js",
@@ -36,7 +36,6 @@
     "pino": "^10.1.0",
     "pino-pretty": "^13.1.2",
     "prisma": "^7.0.0",
-    "tesseract.js": "^6.0.1",
     "zod": "^4.1.12"
   },
   "devDependencies": {
@@ -48,6 +47,5 @@
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
     "vitest": "^4.0.13"
-  },
-  "packageManager": "pnpm@10.21.0+sha512.da3337267e400fdd3d479a6c68079ac6db01d8ca4f67572083e722775a796788a7a9956613749e000fac20d424b594f7a791a5f4e2e13581c5ef947f26968a40"
+  }
 }
