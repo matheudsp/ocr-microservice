@@ -1,8 +1,8 @@
-import { VerificationRequest } from "../domain/VerificationRequest";
-import { DocumentType, ExpectedData } from "../dtos/verification.dto";
-import { IQueueProvider } from "../ports/IQueueProvider";
-import { IStorageProvider } from "../ports/IStorageProvider";
-import { IVerificationRepository } from "../ports/IVerificationRepository";
+import { VerificationRequest } from "../../domain/VerificationRequest";
+import { DocumentType, ExpectedData } from "../../dtos/verification.dto";
+import { IQueueProvider } from "../../ports/IQueueProvider";
+import { IStorageProvider } from "../../ports/IStorageProvider";
+import { IVerificationRepository } from "../../ports/IVerificationRepository";
 
 interface RequestVerificationInput {
   file: {
@@ -15,6 +15,7 @@ interface RequestVerificationInput {
     documentType: DocumentType;
     expectedData: ExpectedData;
   };
+  webhookUrl?: string;
 }
 
 interface RequestVerificationOutput {
@@ -34,7 +35,7 @@ export class RequestVerificationUsecase {
   async execute(
     input: RequestVerificationInput
   ): Promise<RequestVerificationOutput> {
-    const { file, metadata } = input;
+    const { file, metadata, webhookUrl } = input;
 
     const safeFileName = `${Date.now()}-${file.filename.replace(/\s+/g, "_")}`;
 
@@ -58,6 +59,8 @@ export class RequestVerificationUsecase {
       verificationId: verificationRequest.id,
       fileKey: verificationRequest.fileKey,
       expectedData: metadata.expectedData,
+      webhookUrl: webhookUrl,
+      externalReference: metadata.externalReference,
     });
 
     return {

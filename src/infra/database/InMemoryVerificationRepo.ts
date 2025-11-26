@@ -19,6 +19,21 @@ export class InMemoryVerificationRepo implements IVerificationRepository {
     return item ? VerificationRequest.restore(item) : null;
   }
 
+  async findByIdOrExternalId(
+    identifier: string
+  ): Promise<VerificationRequest | null> {
+    const byId = this.db.get(identifier);
+    if (byId) return VerificationRequest.restore(byId);
+
+    for (const item of this.db.values()) {
+      if (item.externalReference === identifier) {
+        return VerificationRequest.restore(item);
+      }
+    }
+
+    return null;
+  }
+
   async update(request: VerificationRequest): Promise<void> {
     this.db.set(request.id, request);
   }

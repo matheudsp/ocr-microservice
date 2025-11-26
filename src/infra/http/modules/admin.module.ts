@@ -1,5 +1,5 @@
-import { CreateApiKeyUsecase } from "@core/usecases/CreateApiKeyUsecase";
-import { ValidateAdminKeyUsecase } from "@core/usecases/ValidateAdminKeyUsecase";
+import { CreateApiKeyUsecase } from "@core/usecases/ApiKeyUseCase/CreateApiKeyUsecase";
+import { ValidateAdminKeyUsecase } from "@core/usecases/ApiKeyUseCase/ValidateAdminKeyUsecase";
 import { CreateApiKeyController } from "@infra/http/controllers/CreateApiKeyController";
 import { PrismaAuthRepo } from "@infra/database/PrismaAuthRepo";
 

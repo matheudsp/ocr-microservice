@@ -1,31 +1,34 @@
 import levenshtein from "fast-levenshtein";
-import { IVerificationRepository } from "../ports/IVerificationRepository";
-import { IStorageProvider } from "../ports/IStorageProvider";
-import { IOcrProvider } from "../ports/IOcrProvider";
+import { IVerificationRepository } from "../../ports/IVerificationRepository";
+import { IStorageProvider } from "../../ports/IStorageProvider";
+import { IOcrProvider } from "../../ports/IOcrProvider";
 import {
   VerificationResult,
   VerificationConfig,
   ExpectedData,
-} from "../dtos/verification.dto";
+  VerificationStatus,
+} from "../../dtos/verification.dto";
 import { logger } from "@infra/logger";
+import type { IWebhookProvider } from "@core/ports/IWebhookProvider";
 
 interface ProcessVerificationInput {
   verificationId: string;
   fileKey: string;
   expectedData: ExpectedData;
+  webhookUrl?: string;
 }
-
 export class ProcessVerificationUsecase {
   private readonly serviceName: string = ProcessVerificationUsecase.name;
   constructor(
     private verificationRepo: IVerificationRepository,
     private storageProvider: IStorageProvider,
     private ocrProvider: IOcrProvider,
+    private webhookProvider: IWebhookProvider,
     private config: VerificationConfig
   ) {}
 
   async execute(input: ProcessVerificationInput): Promise<void> {
-    const { verificationId, fileKey, expectedData } = input;
+    const { verificationId, fileKey, expectedData, webhookUrl } = input;
 
     const request = await this.verificationRepo.findById(verificationId);
     if (!request) {
@@ -54,6 +57,15 @@ export class ProcessVerificationUsecase {
       logger.info(
         `Verificação ${verificationId} concluída. Score: ${confidenceScore}`
       );
+      if (webhookUrl) {
+        await this.webhookProvider.send(webhookUrl, {
+          verificationId: request.id,
+          externalReference: request.externalReference,
+          status: request.status,
+          confidenceScore: request.confidenceScore,
+          processedAt: request.updatedAt,
+        });
+      }
     } catch (error) {
       logger.error(
         { usecase: this.serviceName, err: error },
@@ -61,6 +73,15 @@ export class ProcessVerificationUsecase {
       );
       request.fail();
       await this.verificationRepo.update(request);
+      if (webhookUrl) {
+        await this.webhookProvider.send(webhookUrl, {
+          verificationId: request.id,
+          externalReference: request.externalReference,
+          status: VerificationStatus.FAILED,
+          confidenceScore: 0,
+          processedAt: new Date(),
+        });
+      }
     }
   }
   private normalizeText(text: string): string {

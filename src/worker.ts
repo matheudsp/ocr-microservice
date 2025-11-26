@@ -3,10 +3,11 @@ import { MinioStorageProvider } from "@infra/storage/MinioStorageProvider";
 import { TesseractOcrProvider } from "@infra/ocr/TesseractOcrProvider";
 import { GoogleVisionOcrProvider } from "@infra/ocr/GoogleVisionOcrProvider";
 // import { InMemoryVerificationRepo } from "@infra/database/InMemoryVerificationRepo";
-import { ProcessVerificationUsecase } from "@core/usecases/ProcessVerificationUsecase";
+import { ProcessVerificationUsecase } from "@core/usecases/VerificationUseCase/ProcessVerificationUsecase";
 import { logger } from "@infra/logger";
 import { IVerificationRepository } from "@core/ports/IVerificationRepository";
 import { env } from "@infra/config/env";
+import { FetchWebhookProvider } from "@infra/webhook/FetchWebhookProvider";
 
 export const createWorker = (
   repo: IVerificationRepository,
@@ -31,11 +32,12 @@ export const createWorker = (
     bucketName: env.MINIO_BUCKET,
     similarityThreshold: env.OCR_THRESHOLD,
   };
-
+  const webhookProvider = new FetchWebhookProvider();
   const processVerification = new ProcessVerificationUsecase(
     repo,
     storage,
     ocrProvider,
+    webhookProvider,
     config
   );
 
@@ -51,6 +53,7 @@ export const createWorker = (
         verificationId: job.data.verificationId,
         fileKey: job.data.fileKey,
         expectedData: job.data.expectedData,
+        webhookUrl: job.data.webhookUrl,
       });
     },
     {

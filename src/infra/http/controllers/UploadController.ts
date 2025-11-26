@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { z } from "zod";
-import { RequestVerificationUsecase } from "@core/usecases/RequestVerificationUsecase";
+import { RequestVerificationUsecase } from "@core/usecases/VerificationUseCase/RequestVerificationUsecase";
 import { DocumentType } from "@core/dtos/verification.dto";
 
 const metadataSchema = z.object({
@@ -63,6 +63,7 @@ export class UploadController {
           mimetype: mimetype,
         },
         metadata: validatedMetadata,
+        webhookUrl: req.apiKey?.webhookUrl ?? undefined,
       });
 
       return reply.status(202).send(result);

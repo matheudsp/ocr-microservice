@@ -1,5 +1,5 @@
 import { randomBytes } from "node:crypto";
-import { IAuthRepository } from "../ports/IAuthRepository";
+import { IAuthRepository } from "../../ports/IAuthRepository";
 
 interface Input {
   client: string;
@@ -7,11 +7,8 @@ interface Input {
   allowedIp?: string;
 }
 
-interface Output {
+interface Output extends Input {
   key: string;
-  client: string;
-  webhookUrl?: string;
-  allowedIp?: string;
 }
 
 export class CreateApiKeyUsecase {

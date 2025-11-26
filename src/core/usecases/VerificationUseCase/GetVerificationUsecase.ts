@@ -1,4 +1,4 @@
-import { IVerificationRepository } from "../ports/IVerificationRepository";
+import { IVerificationRepository } from "../../ports/IVerificationRepository";
 
 interface GetVerificationOutput {
   id: string;

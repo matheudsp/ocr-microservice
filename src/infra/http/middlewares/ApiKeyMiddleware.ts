@@ -1,28 +1,33 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { ValidateApiKeyUsecase } from "@core/usecases/ValidateApiKeyUsecase";
+import { ValidateApiKeyUsecase } from "@core/usecases/ApiKeyUseCase/ValidateApiKeyUsecase";
 
 export const apiKeyMiddleware = (
   validateApiKeyUseCase: ValidateApiKeyUsecase
 ) => {
   return async (req: FastifyRequest, reply: FastifyReply) => {
-    const apiKey = req.headers["x-api-key"] as string;
+    const apiKeyHeader = req.headers["x-api-key"] as string;
 
     const requestIp = req.ip;
 
-    if (!apiKey) {
+    if (!apiKeyHeader) {
       return reply.status(401).send({
         error: "Unauthorized",
         message: "API Key não fornecida (header: x-api-key)",
       });
     }
 
-    const isValid = await validateApiKeyUseCase.execute(apiKey, requestIp);
+    const apiKeyEntity = await validateApiKeyUseCase.execute(
+      apiKeyHeader,
+      requestIp
+    );
 
-    if (!isValid) {
+    if (!apiKeyEntity) {
       return reply.status(403).send({
         error: "Forbidden",
         message: "API Key inválida, inativa ou IP não autorizado",
       });
     }
+
+    req.apiKey = apiKeyEntity;
   };
 };

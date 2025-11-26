@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { z } from "zod";
-import { GetVerificationUsecase } from "@core/usecases/GetVerificationUsecase";
+import { GetVerificationUsecase } from "@core/usecases/VerificationUseCase/GetVerificationUsecase";
 
 const paramsSchema = z.object({
   id: z.string().min(1),

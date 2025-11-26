@@ -4,6 +4,8 @@ export interface VerificationJobData {
   verificationId: string;
   fileKey: string;
   expectedData: ExpectedData;
+  webhookUrl?: string;
+  externalReference?: string;
 }
 
 export interface IQueueProvider {

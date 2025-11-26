@@ -5,9 +5,11 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/main.ts | pino-pretty",
-    "build": "tsc",
+    "build": "tsc-alias --resolve-full-paths",
     "start": "node dist/main.js",
     "test": "vitest",
+    "test:e2e": "vitest run src/tests/e2e/verification-flow.spec.ts",
+    "test:ci": "vitest run",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
     "admin:create": "tsx src/scripts/create-admin.ts"
@@ -42,6 +44,7 @@
     "@types/fast-levenshtein": "^0.0.4",
     "@types/node": "^24.10.1",
     "@types/pg": "^8.15.6",
+    "tsc-alias": "^1.8.16",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
     "vitest": "^4.0.13"

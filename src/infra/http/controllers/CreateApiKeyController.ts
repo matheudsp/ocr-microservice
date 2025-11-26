@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { z } from "zod";
-import { CreateApiKeyUsecase } from "@core/usecases/CreateApiKeyUsecase";
+import { CreateApiKeyUsecase } from "@core/usecases/ApiKeyUseCase/CreateApiKeyUsecase";
 
 const bodySchema = z.object({
   client: z.string().min(3),

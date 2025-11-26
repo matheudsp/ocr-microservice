@@ -1,15 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { env } from "../../config/env";
 import { ProcessVerificationUsecase } from "./ProcessVerificationUsecase";
-import { IVerificationRepository } from "../ports/IVerificationRepository";
-import { IStorageProvider } from "../ports/IStorageProvider";
-import { IOcrProvider } from "../ports/IOcrProvider";
-import { VerificationRequest } from "../domain/VerificationRequest";
+import { IVerificationRepository } from "../../ports/IVerificationRepository";
+import { IStorageProvider } from "../../ports/IStorageProvider";
+import { IOcrProvider } from "../../ports/IOcrProvider";
+import { VerificationRequest } from "../../domain/VerificationRequest";
 import {
   DocumentType,
   VerificationStatus,
   VerificationConfig,
-} from "../dtos/verification.dto";
+} from "../../dtos/verification.dto";
 
 vi.mock("@infra/logger", () => ({
   logger: {

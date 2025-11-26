@@ -1,4 +1,4 @@
-import { IAuthRepository } from "../ports/IAuthRepository";
+import { IAuthRepository } from "../../ports/IAuthRepository";
 
 export class ValidateAdminKeyUsecase {
   constructor(private authRepo: IAuthRepository) {}

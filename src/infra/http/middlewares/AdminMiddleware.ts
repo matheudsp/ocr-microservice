@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { ValidateAdminKeyUsecase } from "@core/usecases/ValidateAdminKeyUsecase";
+import { ValidateAdminKeyUsecase } from "@core/usecases/ApiKeyUseCase/ValidateAdminKeyUsecase";
 
 export const adminMiddleware = (validateAdminKey: ValidateAdminKeyUsecase) => {
   return async (req: FastifyRequest, reply: FastifyReply) => {
