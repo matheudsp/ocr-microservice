@@ -1,5 +1,5 @@
+import { ApiKey } from "@core/domain/ApiKey";
 import { IAuthRepository } from "../../ports/IAuthRepository";
-import { ApiKey } from "@infra/config/prisma/generated/client";
 
 export class ValidateApiKeyUsecase {
   constructor(private authRepo: IAuthRepository) {}

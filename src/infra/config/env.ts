@@ -1,5 +1,11 @@
+import { config } from "dotenv";
 import "dotenv/config";
+import path from "path";
 import { z } from "zod";
+const envFile =
+  process.env.NODE_ENV === "development" ? ".env.development" : ".env";
+
+config({ path: path.resolve(process.cwd(), envFile) });
 
 const envSchema = z.object({
   // Server
@@ -10,8 +16,8 @@ const envSchema = z.object({
   PORT: z.coerce.number().default(3000),
 
   // App
-  OCR_THRESHOLD: z.coerce.number().default(0.7),
-
+  OCR_THRESHOLD: z.coerce.number().default(0.75),
+  QUEUE_CONCURRENCY: z.coerce.number().int().positive().default(1),
   // Redis
   REDIS_HOST: z.string().default("localhost"),
   REDIS_PORT: z.coerce.number().default(6379),
@@ -19,7 +25,7 @@ const envSchema = z.object({
 
   // Database
   DATABASE_URL: z.string(),
-
+  POSTGRES_DB: z.string().default("ocr_db"),
   // MinIO
   MINIO_ENDPOINT: z.string().default("localhost"),
   MINIO_PORT: z.coerce.number().default(9000),

@@ -39,7 +39,3 @@ __snapshots__/
 gcp-keys.json
 secrets/
 
-src/infra/config/prisma/generated
-./src/infra/config/prisma/generated
-./src/infra/config/prisma/generated/
-src/infra/config/prisma/generated/

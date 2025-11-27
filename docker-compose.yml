@@ -40,7 +40,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   ocr-service:
-    image: ghcr.io/matheudsp/ocr-microservice:latest
+    build: .
     container_name: ocr_service_app
     restart: always
     depends_on:
@@ -51,27 +51,8 @@ services:
       - "${PORT}:${PORT}"
     networks:
       - app-network
-
-    environment:
-      NODE_ENV: production
-      PORT: ${PORT}
-      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public"
-
-      # Redis
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
-
-      # MinIO
-      MINIO_ENDPOINT: minio
-      MINIO_PORT: 9000
-      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
-      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
-      MINIO_BUCKET: ${MINIO_BUCKET}
-
-      # App Config
-      OCR_THRESHOLD: ${OCR_THRESHOLD}
-      GOOGLE_APPLICATION_CREDENTIALS: /app/gcp-keys.json
+    env_file:
+      - .env.production
 
     volumes:
       - ./secrets/gcp-keys.json:/app/gcp-keys.json:ro

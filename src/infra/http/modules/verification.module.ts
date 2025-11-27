@@ -2,17 +2,17 @@ import { RequestVerificationUsecase } from "@core/usecases/VerificationUseCase/R
 import { GetVerificationUsecase } from "@core/usecases/VerificationUseCase/GetVerificationUsecase";
 import { UploadController } from "@infra/http/controllers/UploadController";
 import { GetVerificationController } from "@infra/http/controllers/GetVerificationController";
-import { PrismaVerificationRepo } from "@infra/database/PrismaVerificationRepo";
+import { VerificationRepository } from "@infra/database/VerificationRepository";
 import { MinioStorageProvider } from "@infra/storage/MinioStorageProvider";
 import { BullMqProvider } from "@infra/queue/BullMqProvider";
 import { env } from "@infra/config/env";
-import { PrismaAuthRepo } from "@infra/database/PrismaAuthRepo";
+import { AuthRepository } from "@infra/database/AuthRepository";
 import { ValidateApiKeyUsecase } from "@core/usecases/ApiKeyUseCase/ValidateApiKeyUsecase";
 import { apiKeyMiddleware } from "../middlewares/ApiKeyMiddleware";
 
 export const VerificationModule = () => {
-  const authRepo = new PrismaAuthRepo();
-  const verificationRepo = new PrismaVerificationRepo();
+  const authRepo = new AuthRepository();
+  const verificationRepo = new VerificationRepository();
   const storageProvider = new MinioStorageProvider();
   const queueProvider = new BullMqProvider("ocr-processing-queue");
 

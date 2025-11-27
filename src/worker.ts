@@ -58,7 +58,7 @@ export const createWorker = (
         port: env.REDIS_PORT,
         password: env.REDIS_PASSWORD,
       },
-      concurrency: 1,
+      concurrency: env.QUEUE_CONCURRENCY,
     }
   );
 

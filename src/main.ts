@@ -1,7 +1,7 @@
 import { env } from "@infra/config/env";
 import { buildApp } from "@infra/http/app";
 import { createWorker } from "./worker";
-import { PrismaVerificationRepo } from "@infra/database/PrismaVerificationRepo";
+import { VerificationRepository } from "@infra/database/VerificationRepository";
 import { MinioStorageProvider } from "@infra/storage/MinioStorageProvider";
 
 const startApi = async () => {
@@ -17,7 +17,7 @@ const startApi = async () => {
 };
 
 const startWorker = () => {
-  const repository = new PrismaVerificationRepo();
+  const repository = new VerificationRepository();
   const storage = new MinioStorageProvider();
   createWorker(repository, storage);
 };

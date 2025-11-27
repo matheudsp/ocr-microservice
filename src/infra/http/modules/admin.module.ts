@@ -1,10 +1,10 @@
 import { CreateApiKeyUsecase } from "@core/usecases/ApiKeyUseCase/CreateApiKeyUsecase";
 import { ValidateAdminKeyUsecase } from "@core/usecases/ApiKeyUseCase/ValidateAdminKeyUsecase";
 import { CreateApiKeyController } from "@infra/http/controllers/CreateApiKeyController";
-import { PrismaAuthRepo } from "@infra/database/PrismaAuthRepo";
+import { AuthRepository } from "@infra/database/AuthRepository";
 
 export const AdminModule = () => {
-  const authRepo = new PrismaAuthRepo();
+  const authRepo = new AuthRepository();
 
   const createApiKeyUseCase = new CreateApiKeyUsecase(authRepo);
   const validateAdminKeyUseCase = new ValidateAdminKeyUsecase(authRepo);

@@ -1,32 +1,29 @@
-import { env } from "@infra/config/env";
-import { PrismaClient, Role } from "@infra/config/prisma/generated/client";
-import { PrismaPg } from "@prisma/adapter-pg";
+import { db } from "@infra/config/drizzle/database";
+import { apiKeys } from "@infra/config/drizzle/schema";
 import { randomBytes } from "crypto";
-
-const connectionString = `${env.DATABASE_URL}`;
-const adapter = new PrismaPg({ connectionString });
-const prisma = new PrismaClient({ adapter });
+import { eq } from "drizzle-orm";
 
 async function main() {
-  const adminKey = `sk_admin_${randomBytes(16).toString("hex")}`;
-
-  console.log("Criando Chave Admin Inicial...");
-
-  const created = await prisma.apiKey.create({
-    data: {
-      client: "Super Admin (Bootstrap)",
-      key: adminKey,
-      role: Role.ADMIN,
-      isActive: true,
-    },
+  const adminExists = await db.query.apiKeys.findFirst({
+    where: eq(apiKeys.role, "ADMIN"),
   });
 
-  console.log("\n============================================");
-  console.log(" ATENÇÃO: GUARDE ESTA CHAVE AGORA!");
-  console.log(` KEY: ${created.key}`);
-  console.log("============================================\n");
+  if (adminExists) {
+    console.log("[Script] Admin já existente.");
+    process.exit(0);
+  }
+
+  const adminKey = `sk_admin_${randomBytes(16).toString("hex")}`;
+
+  await db.insert(apiKeys).values({
+    client: "Super Admin (Bootstrap)",
+    key: adminKey,
+    role: "ADMIN",
+    isActive: true,
+  });
+
+  console.log(`KEY: ${adminKey}`);
+  process.exit(0);
 }
 
-main()
-  .catch((e) => console.error(e))
-  .finally(async () => await prisma.$disconnect());
+main();

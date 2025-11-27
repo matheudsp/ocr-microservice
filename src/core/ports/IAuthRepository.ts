@@ -1,4 +1,4 @@
-import { ApiKey } from "@infra/config/prisma/generated/client";
+import { ApiKey } from "@core/domain/ApiKey";
 
 export interface CreateApiKeyInput {
   clientName: string;
