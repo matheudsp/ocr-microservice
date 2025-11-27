@@ -1,10 +1,13 @@
 import { db } from "@infra/config/drizzle/database";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
-import { logger } from "@infra/logger";
-import path from "path";
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 async function main() {
-  logger.info("[Migration] Iniciando migração do banco de dados...");
+  // console.info("[Migration] Iniciando migração do banco de dados...");
 
   try {
     const migrationsFolder = path.join(
@@ -14,10 +17,10 @@ async function main() {
 
     await migrate(db, { migrationsFolder });
 
-    logger.info("[Migration] Migração concluída com sucesso!");
+    // console.info("[Migration] Migração concluída com sucesso!");
     process.exit(0);
   } catch (err) {
-    logger.error({ err }, "[Migration] Falha crítica ao rodar migrações");
+    console.error({ err }, "[Migration] Falha crítica ao rodar migrações");
     process.exit(1);
   }
 }

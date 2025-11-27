@@ -1,18 +1,18 @@
 import { env } from "@infra/config/env";
-import { logger } from "@infra/logger";
+
 import { Client } from "pg";
 
 async function main() {
   const targetDbName = env.POSTGRES_DB;
 
   if (!targetDbName) {
-    logger.error("[InitDB] Erro: POSTGRES_DB não definido.");
+    console.error("[InitDB] Erro: POSTGRES_DB não definido.");
     process.exit(1);
   }
 
-  logger.info(
-    `[InitDB] Verificando existência do banco de dados: ${targetDbName}...`
-  );
+  // console.info(
+  //   `[InitDB] Verificando existência do banco de dados: ${targetDbName}...`
+  // );
 
   const connectionString = env.DATABASE_URL;
 
@@ -32,7 +32,7 @@ async function main() {
     );
 
     if (checkRes.rowCount === 0) {
-      logger.info(
+      console.info(
         `[InitDB] Banco '${targetDbName}' não encontrado. Criando...`
       );
 
@@ -42,12 +42,12 @@ async function main() {
         );
       }
       await client.query(`CREATE DATABASE "${targetDbName}"`);
-      logger.info(`[InitDB] Banco '${targetDbName}' criado com sucesso!`);
+      console.info(`[InitDB] Banco '${targetDbName}' criado com sucesso!`);
     } else {
-      logger.info(`[InitDB] Banco '${targetDbName}' já existe. Nada a fazer.`);
+      // console.info(`[InitDB] Banco '${targetDbName}' já existe. Nada a fazer.`);
     }
   } catch (err: any) {
-    logger.error({ err }, "[InitDB] Falha ao inicializar banco de dados");
+    console.error({ err }, "[InitDB] Falha ao inicializar banco de dados");
     process.exit(1);
   } finally {
     await client.end();

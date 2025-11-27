@@ -1,11 +1,11 @@
 import { config } from "dotenv";
-import "dotenv/config";
 import path from "path";
 import { z } from "zod";
+
 const envFile =
   process.env.NODE_ENV === "development" ? ".env.development" : ".env";
 
-config({ path: path.resolve(process.cwd(), envFile) });
+config({ path: path.resolve(process.cwd(), envFile), quiet: true });
 
 const envSchema = z.object({
   // Server

@@ -51,11 +51,9 @@ services:
       - "${PORT}:${PORT}"
     networks:
       - app-network
-    env_file:
-      - .env.production
 
     volumes:
-      - ./secrets/gcp-keys.json:/app/gcp-keys.json:ro
+      - ./secrets/gcp-keys.json:/app/secrets/gcp-keys.json:ro
 
 volumes:
   minio_data:

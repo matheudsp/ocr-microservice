@@ -10,12 +10,10 @@
     "test": "vitest",
     "test:e2e": "vitest run src/tests/e2e/verification-flow.spec.ts",
     "test:ci": "vitest run",
-    "docker:up": "docker-compose up -d",
-    "docker:down": "docker-compose down",
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f",
     "admin:create": "tsx src/scripts/create-admin.ts"
-  },
-  "prisma": {
-    "seed": "tsx src/infra/config/prisma/seed.ts"
   },
   "keywords": [],
   "author": "",

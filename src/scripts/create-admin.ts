@@ -9,7 +9,7 @@ async function main() {
   });
 
   if (adminExists) {
-    console.log("[Script] Admin já existente.");
+    // console.log("[Script] Admin já existente.");
     process.exit(0);
   }
 
@@ -22,7 +22,11 @@ async function main() {
     isActive: true,
   });
 
-  console.log(`KEY: ${adminKey}`);
+  console.log(`
+    ---------------------------------------
+    Here your APIKEY: ${adminKey}
+    ---------------------------------------
+    `);
   process.exit(0);
 }
 
