@@ -53,3 +53,4 @@ Este microserviço foi desenhado para eliminar o gargalo operacional na etapa de
 3. **Processamento:** O Worker consome o job, baixa o arquivo e executa o OCR.
 4. **Estratégia:** O texto extraído é validado pela `VerificationStrategy` correspondente (ex: Regra de 20% de tolerância para Renda).
 5. **Callback:** O resultado (Score + Status) é enviado via Webhook para o cliente.
+ 
