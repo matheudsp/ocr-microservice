@@ -13,6 +13,7 @@ export class VerificationRepository implements IVerificationRepository {
       documentType: request.documentType,
       fileKey: request.fileKey,
       status: request.status,
+      passed: request.passed ?? false,
       confidenceScore: request.confidenceScore ?? 0,
       createdAt: request.createdAt,
       updatedAt: request.updatedAt,
@@ -55,6 +56,7 @@ export class VerificationRepository implements IVerificationRepository {
       .set({
         status: request.status as any,
         failReason: request.failReason,
+        passed: request.passed,
         confidenceScore: request.confidenceScore ?? 0,
         updatedAt: new Date(),
       })
@@ -70,6 +72,7 @@ export class VerificationRepository implements IVerificationRepository {
       documentType: raw.documentType as DocumentType,
       fileKey: raw.fileKey,
       status: raw.status as VerificationStatus,
+      passed: raw.passed ?? undefined,
       failReason: raw.failReason ?? undefined,
       confidenceScore: raw.confidenceScore ?? undefined,
       createdAt: raw.createdAt,

@@ -52,12 +52,12 @@ export class ProcessVerificationUsecase {
         this.config.thresholds
       );
 
-      const { score, reason } = strategy.calculateConfidence(
+      const { score, reason, passed } = strategy.calculateConfidence(
         extractedText,
         expectedData
       );
 
-      request.complete(score, reason);
+      request.complete(score, passed, reason);
       await this.verificationRepo.update(request);
 
       console.info(
@@ -71,6 +71,7 @@ export class ProcessVerificationUsecase {
           verificationId: request.id,
           externalReference: request.externalReference,
           status: request.status,
+          passed: request.passed ?? false,
           failReason: request.failReason,
           confidenceScore: request.confidenceScore,
           processedAt: request.updatedAt,
@@ -96,6 +97,7 @@ export class ProcessVerificationUsecase {
           verificationId: request.id,
           externalReference: request.externalReference,
           status: VerificationStatus.FAILED,
+          passed: false,
           failReason: errorMessage,
           confidenceScore: 0,
           processedAt: new Date(),

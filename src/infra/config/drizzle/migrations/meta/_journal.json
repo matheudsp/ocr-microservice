@@ -8,6 +8,13 @@
       "when": 1764263320867,
       "tag": "0000_sweet_ben_grimm",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1764435714268,
+      "tag": "0001_greedy_bloodstrike",
+      "breakpoints": true
     }
   ]
 }

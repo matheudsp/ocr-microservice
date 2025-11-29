@@ -31,6 +31,7 @@ export const verificationRequests = pgTable("verification_requests", {
   documentType: documentTypeEnum("documentType").notNull(),
   fileKey: text("fileKey").notNull(),
   status: verificationStatusEnum("status").notNull(),
+  passed: boolean("passed"),
   failReason: text("failReason"),
   confidenceScore: integer("confidenceScore"),
   createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),

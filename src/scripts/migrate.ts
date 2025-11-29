@@ -17,7 +17,7 @@ async function main() {
 
     await migrate(db, { migrationsFolder });
 
-    // console.info("[Migration] Migração concluída com sucesso!");
+    console.info("[Migration] Migração concluída com sucesso!");
     process.exit(0);
   } catch (err) {
     console.error({ err }, "[Migration] Falha crítica ao rodar migrações");

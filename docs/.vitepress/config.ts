@@ -2,45 +2,44 @@ import { defineConfig } from "vitepress";
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  title: "OCR Divergent Docs",
-  description: "Documentação de Integração e Operação",
+  title: "OCR Divergent",
+  description: "Documentação ",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: "Home", link: "/" },
       { text: "Guia", link: "/guide/getting-started" },
-      { text: "Examples", link: "/markdown-examples" },
+      { text: "API", link: "/api/endpoints" },
     ],
 
     sidebar: [
       {
-        text: "Começando",
+        text: "Introdução",
         items: [
-          { text: "Instalação e Docker", link: "/guide/getting-started" },
-          { text: "Configuração (Thresholds)", link: "/guide/configuration" },
+          { text: "Começando", link: "/guide/getting-started" },
+          { text: "Arquitetura", link: "/guide/architecture" },
+          { text: "Configuração (Env)", link: "/guide/configuration" },
         ],
       },
       {
         text: "Integração",
         items: [
-          { text: "API Endpoints", link: "/guide/integration" },
+          { text: "Referência da API", link: "/api/endpoints" },
           {
-            text: "Webhooks & Erros",
-            link: "/guide/integration#recebendo-o-resultado-webhook",
+            text: "Webhooks",
+            link: "/api/endpoints#webhooks-push-notification",
           },
         ],
       },
       {
-        text: "Examples",
-        items: [
-          { text: "Markdown Examples", link: "/markdown-examples" },
-          { text: "Runtime API Examples", link: "/api-examples" },
-        ],
+        text: "Operação",
+        items: [{ text: "CI/CD e Deploy", link: "/guide/deployment" }],
       },
     ],
 
     socialLinks: [
       { icon: "github", link: "https://github.com/matheudsp/ocr-divergent" },
+      { icon: "instagram", link: "https://instagram.com/matheudsp" },
     ],
   },
 });

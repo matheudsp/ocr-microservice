@@ -8,6 +8,7 @@ export interface VerificationRequestProps {
   fileKey: string;
   status: VerificationStatus;
   failReason?: string;
+  passed?: boolean;
   confidenceScore?: number;
   createdAt: Date;
   updatedAt: Date;
@@ -20,6 +21,7 @@ export class VerificationRequest {
   public readonly fileKey: string;
   public status: VerificationStatus;
   public failReason?: string;
+  passed?: boolean;
   public confidenceScore?: number;
   public readonly createdAt: Date;
   public updatedAt: Date;
@@ -31,6 +33,7 @@ export class VerificationRequest {
     this.fileKey = props.fileKey;
     this.status = props.status;
     this.failReason = props.failReason;
+    this.passed = props.passed;
     this.confidenceScore = props.confidenceScore;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
@@ -64,8 +67,9 @@ export class VerificationRequest {
     this.updatedAt = new Date();
   }
 
-  complete(score: number, failReason?: string): void {
+  complete(score: number, passed: boolean, failReason?: string): void {
     this.confidenceScore = score;
+    this.passed = passed;
     this.failReason = failReason;
     this.status = VerificationStatus.COMPLETED;
     this.updatedAt = new Date();
