@@ -1,24 +1,30 @@
-import { DocumentType } from "../dtos/verification.dto";
+import { DocumentType, VerificationThresholds } from "../dtos/verification.dto";
 import { IVerificationStrategy } from "../ports/IVerificationStrategy";
 import { IdentityVerificationStrategy } from "../strategies/IdentityVerificationStrategy";
 import { IncomeVerificationStrategy } from "../strategies/IncomeVerificationStrategy";
-import { CpfOnlyVerificationStrategy } from "../strategies/CpfOnlyVerificationStrategy";
+import { CpfVerificationStrategy } from "../strategies/CpfVerificationStrategy";
 
 export class VerificationStrategyFactory {
-  static create(type: DocumentType, threshold: number): IVerificationStrategy {
+  static create(
+    type: DocumentType,
+    config: VerificationThresholds
+  ): IVerificationStrategy {
     switch (type) {
       case DocumentType.RG:
       case DocumentType.CNH:
-        return new IdentityVerificationStrategy(threshold);
+        return new IdentityVerificationStrategy(config.minScoreIdentity);
 
       case DocumentType.COMPROVANTE_RENDA:
-        return new IncomeVerificationStrategy();
+        return new IncomeVerificationStrategy(
+          config.minScoreIncomeName,
+          config.maxToleranceIncomeValue
+        );
 
       case DocumentType.CPF:
-        return new CpfOnlyVerificationStrategy();
+        return new CpfVerificationStrategy(config.minScoreCpfName);
 
       default:
-        throw new Error(`Estratégia de verificação não definida para: ${type}`);
+        throw new Error(`Estratégia não definida para: ${type}`);
     }
   }
 }

@@ -1,9 +1,6 @@
 import levenshtein from "fast-levenshtein";
 
 export class TextHelper {
-  /**
-   * Remove acentos, transforma em uppercase e remove espaços extras.
-   */
   static normalize(text: string): string {
     return text
       .normalize("NFD")
@@ -12,26 +9,24 @@ export class TextHelper {
       .trim();
   }
 
-  /**
-   * Calcula a similaridade entre uma string agulha (needle) e um palheiro (haystack).
-   * Usa janela deslizante para encontrar a melhor correspondência dentro do texto completo.
-   */
   static calculateSimilarity(needle: string, haystack: string): number {
     if (!needle || !haystack) return 0;
-    if (haystack.includes(needle)) return 1.0;
+    const cleanHaystack = this.normalize(haystack);
+    const cleanNeedle = this.normalize(needle);
 
-    const words = haystack.split(/\s+/);
+    if (cleanHaystack.includes(cleanNeedle)) return 1.0;
+
+    const words = cleanHaystack.split(/\s+/);
     let bestDist = Infinity;
-    const needleParts = needle.split(" ").length;
+    const needleParts = cleanNeedle.split(" ").length;
 
-    // Janela deslizante para comparar trechos de tamanho similar
     for (let i = 0; i <= words.length - needleParts; i++) {
       const chunk = words.slice(i, i + needleParts).join(" ");
-      const dist = levenshtein.get(needle, chunk);
+      const dist = levenshtein.get(cleanNeedle, chunk);
       if (dist < bestDist) bestDist = dist;
     }
 
-    const maxLength = Math.max(needle.length, 1);
+    const maxLength = Math.max(cleanNeedle.length, 1);
     const similarity = 1 - bestDist / maxLength;
 
     return Math.max(0, similarity);

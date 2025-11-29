@@ -16,7 +16,11 @@ const envSchema = z.object({
   PORT: z.coerce.number().default(3000),
 
   // App
-  OCR_THRESHOLD: z.coerce.number().default(0.75),
+  OCR_MIN_SCORE_IDENTITY: z.coerce.number().min(0).max(1).default(0.75),
+  OCR_MIN_SCORE_INCOME_NAME: z.coerce.number().min(0).max(1).default(0.85),
+  OCR_MAX_TOLERANCE_INCOME_VALUE: z.coerce.number().min(0).max(1).default(0.2),
+  OCR_MIN_SCORE_CPF_NAME: z.coerce.number().min(0).max(1).default(0.8),
+
   QUEUE_CONCURRENCY: z.coerce.number().int().positive().default(1),
   // Redis
   REDIS_HOST: z.string().default("localhost"),

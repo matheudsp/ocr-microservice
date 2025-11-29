@@ -26,7 +26,12 @@ export const createWorker = (
 
   const config = {
     bucketName: env.MINIO_BUCKET,
-    similarityThreshold: env.OCR_THRESHOLD,
+    thresholds: {
+      minScoreIdentity: env.OCR_MIN_SCORE_IDENTITY,
+      minScoreIncomeName: env.OCR_MIN_SCORE_INCOME_NAME,
+      maxToleranceIncomeValue: env.OCR_MAX_TOLERANCE_INCOME_VALUE,
+      minScoreCpfName: env.OCR_MIN_SCORE_CPF_NAME,
+    },
   };
   const webhookProvider = new FetchWebhookProvider();
   const processVerification = new ProcessVerificationUsecase(

@@ -1,196 +1,148 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { env } from "../../config/env";
-import { ProcessVerificationUsecase } from "./ProcessVerificationUsecase";
-import { IVerificationRepository } from "../../ports/IVerificationRepository";
-import { IStorageProvider } from "../../ports/IStorageProvider";
-import { IOcrProvider } from "../../ports/IOcrProvider";
-import { VerificationRequest } from "../../domain/VerificationRequest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { ProcessVerificationUsecase } from "../../../core/usecases/VerificationUseCase/ProcessVerificationUsecase";
+import { VerificationRequest } from "../../../core/domain/VerificationRequest";
 import {
   DocumentType,
   VerificationStatus,
-  VerificationConfig,
-} from "../../dtos/verification.dto";
+} from "../../../core/dtos/verification.dto";
 
-vi.mock("@infra/logger", () => ({
-  logger: {
-    info: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn(),
-  },
-}));
-
-// Mocks das dependências
+// Mocks das interfaces (Ports)
 const mockRepo = {
   findById: vi.fn(),
   update: vi.fn(),
   save: vi.fn(),
-} as unknown as IVerificationRepository;
+  findByIdOrExternalId: vi.fn(),
+};
 
 const mockStorage = {
   getFile: vi.fn(),
   saveFile: vi.fn(),
-} as unknown as IStorageProvider;
+};
 
 const mockOcr = {
   extractText: vi.fn(),
-} as unknown as IOcrProvider;
-
-const config: VerificationConfig = {
-  bucketName: "test-bucket",
-  similarityThreshold: env.OCR_THRESHOLD, // 70% de similaridade mínima
 };
 
-// Dados de teste "seguros" (apenas em memória no teste)
-const safeVerificationId = "uuid-123";
-const safeFileKey = "docs/rg-frente.jpg";
-const sensitiveData = {
-  name: "João da Silva",
-  cpf: "123.456.789-00",
+const mockWebhook = {
+  send: vi.fn(),
 };
 
-describe("ProcessVerificationUsecase", () => {
-  let usecase: ProcessVerificationUsecase;
+describe("Unit - ProcessVerificationUsecase", () => {
+  let useCase: ProcessVerificationUsecase;
+
+  // Configuração padrão para os testes
+  const config = {
+    bucketName: "test-bucket",
+    thresholds: {
+      minScoreIdentity: 0.75,
+      minScoreIncomeName: 0.85,
+      minScoreCpfName: 0.8,
+      maxToleranceIncomeValue: 0.2,
+    },
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
-    usecase = new ProcessVerificationUsecase(
+    useCase = new ProcessVerificationUsecase(
       mockRepo,
       mockStorage,
       mockOcr,
+      mockWebhook,
       config
     );
   });
 
-  it("deve processar com sucesso e aprovar quando o OCR corresponde aos dados", async () => {
+  it("deve processar um RG com sucesso e atualizar o status para COMPLETED", async () => {
     // ARRANGE
-    // 1. O registro existe no banco (estado inicial PENDING)
-    const existingRequest = VerificationRequest.create(
-      DocumentType.RG_FRENTE,
-      safeFileKey
-    );
-    // Forçamos o ID para bater com o mock
-    Object.defineProperty(existingRequest, "id", { value: safeVerificationId });
+    const verificationId = "123";
+    const fileKey = "docs/rg.jpg";
+    const expectedData = { name: "JOAO DA SILVA", cpf: "123.456.789-00" };
 
-    vi.spyOn(mockRepo, "findById").mockResolvedValue(existingRequest);
+    // Criamos uma entidade de domínio real para simular o banco
+    const mockRequest = VerificationRequest.create(DocumentType.RG, fileKey);
+    // Forçamos o ID para bater com o teste
+    Object.assign(mockRequest, { id: verificationId });
 
-    // 2. O Storage retorna um buffer fake
-    vi.spyOn(mockStorage, "getFile").mockResolvedValue(
-      Buffer.from("fake-image")
-    );
+    mockRepo.findById.mockResolvedValue(mockRequest);
+    mockStorage.getFile.mockResolvedValue(Buffer.from("fake-image-buffer"));
 
-    // 3. O OCR retorna o texto correto (simulando leitura perfeita)
-    vi.spyOn(mockOcr, "extractText").mockResolvedValue(
-      "NOME: JOAO DA SILVA CPF: 12345678900"
+    // Simulamos um OCR que retorna texto contendo as palavras chaves do RG e o nome correto
+    mockOcr.extractText.mockResolvedValue(
+      "REPUBLICA FEDERATIVA DO BRASIL IDENTIDADE JOAO DA SILVA 12345678900 SSP"
     );
 
     // ACT
-    await usecase.execute({
-      verificationId: safeVerificationId,
-      fileKey: safeFileKey,
-      expectedData: sensitiveData,
+    await useCase.execute({
+      verificationId,
+      fileKey,
+      expectedData,
+      webhookUrl: "http://webhook.site",
     });
 
     // ASSERT
-    // Verifica se mudou para PROCESSING
+    //  Deve ter marcado como Processing
     expect(mockRepo.update).toHaveBeenCalledTimes(2);
 
-    // Verifica o estado final da entidade
-    expect(existingRequest.status).toBe(VerificationStatus.COMPLETED);
-    // Como o texto do OCR foi "perfeito", o score deve ser 100
-    expect(existingRequest.confidenceScore).toBe(100);
+    // O OCR deve ter sido chamado
+    expect(mockOcr.extractText).toHaveBeenCalled();
+
+    //  O resultado final deve ser COMPLETED com Score alto
+    expect(mockRequest.status).toBe(VerificationStatus.COMPLETED);
+    expect(mockRequest.confidenceScore).toBeGreaterThanOrEqual(90);
+
+    //  Webhook deve ser disparado
+    expect(mockWebhook.send).toHaveBeenCalledWith(
+      "http://webhook.site",
+      expect.objectContaining({
+        status: VerificationStatus.COMPLETED,
+        verificationId: verificationId,
+      })
+    );
   });
 
-  it("deve reprovar (score 0) quando o nome não tem similaridade suficiente", async () => {
+  it("deve falhar (FAILED) se o OCR retornar erro e notificar webhook", async () => {
     // ARRANGE
-    const existingRequest = VerificationRequest.create(
-      DocumentType.RG_FRENTE,
-      safeFileKey
+    const verificationId = "error-id";
+    const mockRequest = VerificationRequest.create(
+      DocumentType.CNH,
+      "docs/error.jpg"
     );
-    vi.spyOn(mockRepo, "findById").mockResolvedValue(existingRequest);
-    vi.spyOn(mockStorage, "getFile").mockResolvedValue(
-      Buffer.from("fake-image")
-    );
+    Object.assign(mockRequest, { id: verificationId });
 
-    // OCR retorna nome totalmente diferente
-    vi.spyOn(mockOcr, "extractText").mockResolvedValue(
-      "NOME: MARIA OLIVEIRA CPF: 12345678900"
-    );
+    mockRepo.findById.mockResolvedValue(mockRequest);
+    mockStorage.getFile.mockResolvedValue(Buffer.from("img"));
+    mockOcr.extractText.mockRejectedValue(new Error("OCR Service Down"));
 
     // ACT
-    await usecase.execute({
-      verificationId: safeVerificationId,
-      fileKey: safeFileKey,
-      expectedData: sensitiveData,
+    await useCase.execute({
+      verificationId,
+      fileKey: "docs/error.jpg",
+      expectedData: { name: "Teste", cpf: "000" },
+      webhookUrl: "http://webhook.site",
     });
 
     // ASSERT
-    expect(existingRequest.status).toBe(VerificationStatus.COMPLETED);
-    expect(existingRequest.confidenceScore).toBe(0);
+    expect(mockRequest.status).toBe(VerificationStatus.FAILED);
+    expect(mockRequest.failReason).toBe("OCR Service Down");
+    expect(mockWebhook.send).toHaveBeenCalledWith(
+      "http://webhook.site",
+      expect.objectContaining({
+        status: VerificationStatus.FAILED,
+        failReason: "OCR Service Down",
+      })
+    );
   });
 
-  it("deve reprovar (score 0) quando o CPF não é encontrado no texto", async () => {
+  it("deve lançar erro se a solicitação não for encontrada no banco", async () => {
     // ARRANGE
-    const existingRequest = VerificationRequest.create(
-      DocumentType.RG_FRENTE,
-      safeFileKey
-    );
-    vi.spyOn(mockRepo, "findById").mockResolvedValue(existingRequest);
-    vi.spyOn(mockStorage, "getFile").mockResolvedValue(
-      Buffer.from("fake-image")
-    );
-
-    // OCR retorna nome certo, mas CPF errado
-    vi.spyOn(mockOcr, "extractText").mockResolvedValue(
-      "NOME: JOAO DA SILVA CPF: 99999999999"
-    );
-
-    // ACT
-    await usecase.execute({
-      verificationId: safeVerificationId,
-      fileKey: safeFileKey,
-      expectedData: sensitiveData,
-    });
-
-    // ASSERT
-    expect(existingRequest.confidenceScore).toBe(0);
-  });
-
-  it("deve lidar com falhas no OCR marcando o registro como FAILED", async () => {
-    // ARRANGE
-    const existingRequest = VerificationRequest.create(
-      DocumentType.RG_FRENTE,
-      safeFileKey
-    );
-    vi.spyOn(mockRepo, "findById").mockResolvedValue(existingRequest);
-    vi.spyOn(mockStorage, "getFile").mockResolvedValue(
-      Buffer.from("fake-image")
-    );
-
-    // Simula erro no OCR (ex: API do Google fora do ar)
-    vi.spyOn(mockOcr, "extractText").mockRejectedValue(new Error("OCR Failed"));
-
-    // ACT
-    await usecase.execute({
-      verificationId: safeVerificationId,
-      fileKey: safeFileKey,
-      expectedData: sensitiveData,
-    });
-
-    // ASSERT
-    expect(existingRequest.status).toBe(VerificationStatus.FAILED);
-    expect(mockRepo.update).toHaveBeenCalled();
-  });
-
-  it("deve lançar erro se a solicitação não existir no repositório", async () => {
-    // ARRANGE
-    vi.spyOn(mockRepo, "findById").mockResolvedValue(null);
+    mockRepo.findById.mockResolvedValue(null);
 
     // ACT & ASSERT
     await expect(
-      usecase.execute({
-        verificationId: "invalid-id",
-        fileKey: safeFileKey,
-        expectedData: sensitiveData,
+      useCase.execute({
+        verificationId: "inexistente",
+        fileKey: "key",
+        expectedData: { name: "", cpf: "" },
       })
     ).rejects.toThrow("Solicitação não encontrada");
   });

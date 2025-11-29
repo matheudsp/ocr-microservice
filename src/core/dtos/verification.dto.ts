@@ -11,6 +11,12 @@ export enum VerificationStatus {
   COMPLETED = "COMPLETED",
   FAILED = "FAILED",
 }
+export interface VerificationThresholds {
+  minScoreIdentity: number; // Para RG/CNH
+  minScoreIncomeName: number; // Para Holerite (Nome)
+  minScoreCpfName: number; // Para CPF (Nome)
+  maxToleranceIncomeValue: number; // Para Holerite (Valor)
+}
 
 export interface ExpectedData {
   name: string;
@@ -24,5 +30,5 @@ export interface VerificationResult {
 
 export interface VerificationConfig {
   bucketName: string;
-  similarityThreshold: number; // 0.1 ~ 1.0
+  thresholds: VerificationThresholds;
 }

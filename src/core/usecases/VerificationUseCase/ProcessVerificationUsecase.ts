@@ -7,7 +7,7 @@ import {
   VerificationStatus,
 } from "../../dtos/verification.dto";
 import { VerificationStrategyFactory } from "../../factories/VerificationStrategyFactory";
-import { logger } from "@infra/logger";
+
 import { ExpectedData } from "../../dtos/verification.dto";
 
 interface ProcessVerificationInput {
@@ -49,7 +49,7 @@ export class ProcessVerificationUsecase {
 
       const strategy = VerificationStrategyFactory.create(
         request.documentType,
-        this.config.similarityThreshold
+        this.config.thresholds
       );
 
       const { score, reason } = strategy.calculateConfidence(
@@ -60,7 +60,7 @@ export class ProcessVerificationUsecase {
       request.complete(score, reason);
       await this.verificationRepo.update(request);
 
-      logger.info(
+      console.info(
         `Verificação ${verificationId} concluída. Score: ${score}. Motivo: ${
           reason ?? "N/A"
         }`
@@ -82,7 +82,7 @@ export class ProcessVerificationUsecase {
           ? error.message
           : "Erro desconhecido ao processar documento";
 
-      logger.error(
+      console.error(
         { usecase: this.serviceName, err: error },
         `Falha na verificação ${verificationId}`
       );
