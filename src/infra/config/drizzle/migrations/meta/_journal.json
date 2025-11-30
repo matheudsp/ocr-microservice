@@ -15,6 +15,13 @@
       "when": 1764435714268,
       "tag": "0001_greedy_bloodstrike",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1764515229771,
+      "tag": "0002_dry_firebrand",
+      "breakpoints": true
     }
   ]
 }

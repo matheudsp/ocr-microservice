@@ -16,6 +16,7 @@ interface RequestVerificationInput {
     expectedData: ExpectedData;
   };
   webhookUrl?: string;
+  webhookSecret?: string;
 }
 
 interface RequestVerificationOutput {
@@ -35,7 +36,7 @@ export class RequestVerificationUsecase {
   async execute(
     input: RequestVerificationInput
   ): Promise<RequestVerificationOutput> {
-    const { file, metadata, webhookUrl } = input;
+    const { file, metadata, webhookUrl, webhookSecret } = input;
 
     const safeFileName = `${Date.now()}-${file.filename.replace(/\s+/g, "_")}`;
 
@@ -59,6 +60,7 @@ export class RequestVerificationUsecase {
       fileKey: verificationRequest.fileKey,
       expectedData: metadata.expectedData,
       webhookUrl: webhookUrl,
+      webhookSecret: webhookSecret,
       externalReference: metadata.externalReference,
     });
 

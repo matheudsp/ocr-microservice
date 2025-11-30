@@ -11,5 +11,5 @@ export interface WebhookPayload {
 }
 
 export interface IWebhookProvider {
-  send(url: string, payload: WebhookPayload): Promise<void>;
+  send(url: string, payload: WebhookPayload, secret?: string): Promise<void>;
 }

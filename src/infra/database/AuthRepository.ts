@@ -27,6 +27,7 @@ export class AuthRepository implements IAuthRepository {
         key: data.key,
         role: data.role === "ADMIN" ? "ADMIN" : "CLIENT",
         webhookUrl: data.webhookUrl,
+        webhookSecret: data.webhookSecret,
         allowedIp: data.allowedIp,
         isActive: true,
       })
@@ -42,6 +43,7 @@ export class AuthRepository implements IAuthRepository {
       client: raw.client,
       role: raw.role as ApiKeyRole,
       webhookUrl: raw.webhookUrl ?? undefined,
+      webhookSecret: raw.webhookSecret ?? undefined,
       allowedIp: raw.allowedIp ?? undefined,
       isActive: raw.isActive,
       createdAt: raw.createdAt,

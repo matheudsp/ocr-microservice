@@ -73,6 +73,7 @@ export class UploadController {
         },
         metadata: validatedMetadata,
         webhookUrl: req.apiKey?.webhookUrl ?? undefined,
+        webhookSecret: req.apiKey?.webhookSecret ?? undefined,
       });
 
       return reply.status(202).send(result);

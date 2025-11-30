@@ -15,6 +15,7 @@ interface ProcessVerificationInput {
   fileKey: string;
   expectedData: ExpectedData;
   webhookUrl?: string;
+  webhookSecret?: string;
 }
 
 export class ProcessVerificationUsecase {
@@ -29,7 +30,8 @@ export class ProcessVerificationUsecase {
   ) {}
 
   async execute(input: ProcessVerificationInput): Promise<void> {
-    const { verificationId, fileKey, expectedData, webhookUrl } = input;
+    const { verificationId, fileKey, expectedData, webhookUrl, webhookSecret } =
+      input;
 
     const request = await this.verificationRepo.findById(verificationId);
     if (!request) {
@@ -67,15 +69,19 @@ export class ProcessVerificationUsecase {
       );
 
       if (webhookUrl) {
-        await this.webhookProvider.send(webhookUrl, {
-          verificationId: request.id,
-          externalReference: request.externalReference,
-          status: request.status,
-          passed: request.passed ?? false,
-          failReason: request.failReason,
-          confidenceScore: request.confidenceScore,
-          processedAt: request.updatedAt,
-        });
+        await this.webhookProvider.send(
+          webhookUrl,
+          {
+            verificationId: request.id,
+            externalReference: request.externalReference,
+            status: request.status,
+            passed: request.passed ?? false,
+            failReason: request.failReason,
+            confidenceScore: request.confidenceScore,
+            processedAt: request.updatedAt,
+          },
+          webhookSecret
+        );
       }
     } catch (error: any) {
       const errorMessage =

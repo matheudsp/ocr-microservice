@@ -9,6 +9,7 @@ interface Input {
 
 interface Output extends Input {
   key: string;
+  webhookSecret?: string;
 }
 
 export class CreateApiKeyUsecase {
@@ -20,18 +21,22 @@ export class CreateApiKeyUsecase {
     }
 
     const generatedKey = `sk_client_${randomBytes(16).toString("hex")}`;
-
+    const generatedSecret = input.webhookUrl
+      ? `whsec_${randomBytes(24).toString("hex")}`
+      : undefined;
     const apiKey = await this.authRepo.create({
       clientName: input.client,
       key: generatedKey,
       webhookUrl: input.webhookUrl,
       allowedIp: input.allowedIp,
+      webhookSecret: generatedSecret,
     });
 
     return {
       client: apiKey.client,
       key: apiKey.key,
       webhookUrl: apiKey.webhookUrl ?? undefined,
+      webhookSecret: apiKey.webhookSecret,
       allowedIp: apiKey.allowedIp ?? undefined,
     };
   }

@@ -7,6 +7,7 @@ export interface ApiKeyProps {
   role: ApiKeyRole;
   webhookUrl?: string;
   allowedIp?: string;
+  webhookSecret?: string;
   isActive: boolean;
   createdAt: Date;
 }
@@ -18,6 +19,7 @@ export class ApiKey {
   public readonly role: ApiKeyRole;
   public readonly webhookUrl?: string;
   public readonly allowedIp?: string;
+  public readonly webhookSecret?: string;
   public readonly isActive: boolean;
   public readonly createdAt: Date;
 
@@ -28,6 +30,7 @@ export class ApiKey {
     this.role = props.role;
     this.webhookUrl = props.webhookUrl;
     this.allowedIp = props.allowedIp;
+    this.webhookSecret = props.webhookSecret;
     this.isActive = props.isActive;
     this.createdAt = props.createdAt;
   }

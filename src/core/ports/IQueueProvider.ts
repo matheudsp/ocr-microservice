@@ -5,6 +5,7 @@ export interface VerificationJobData {
   fileKey: string;
   expectedData: ExpectedData;
   webhookUrl?: string;
+  webhookSecret?: string;
   externalReference?: string;
 }
 

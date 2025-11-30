@@ -6,6 +6,7 @@ export interface CreateApiKeyInput {
   role?: "ADMIN" | "CLIENT";
   webhookUrl?: string;
   allowedIp?: string;
+  webhookSecret?: string;
 }
 
 export interface IAuthRepository {

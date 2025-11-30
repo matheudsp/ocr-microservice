@@ -1,14 +1,33 @@
 import { IWebhookProvider, WebhookPayload } from "@core/ports/IWebhookProvider";
 import { logger } from "@infra/logger";
 import { setTimeout } from "node:timers/promises";
-
+import { createHmac } from "node:crypto";
 export class FetchWebhookProvider implements IWebhookProvider {
   private readonly serviceName = FetchWebhookProvider.name;
   private readonly MAX_RETRIES = 4;
 
-  async send(url: string, payload: WebhookPayload): Promise<void> {
+  async send(
+    url: string,
+    payload: WebhookPayload,
+    secret?: string
+  ): Promise<void> {
     let attempt = 0;
+    const payloadString = JSON.stringify(payload);
 
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+      "User-Agent": "OCR-Microservice-Bot/1.0",
+    };
+
+    // Assinatura HMAC SHA256
+    if (secret) {
+      const timestamp = Math.floor(Date.now() / 1000);
+      const signature = createHmac("sha256", secret)
+        .update(`${timestamp}.${payloadString}`)
+        .digest("hex");
+
+      headers["X-OCR-Signature"] = `t=${timestamp},v1=${signature}`;
+    }
     while (attempt < this.MAX_RETRIES) {
       try {
         attempt++;
@@ -28,11 +47,8 @@ export class FetchWebhookProvider implements IWebhookProvider {
 
         const response = await fetch(url, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "User-Agent": "OCR-Microservice-Bot/1.0",
-          },
-          body: JSON.stringify(payload),
+          headers: headers,
+          body: payloadString,
           signal: controller.signal,
         }).finally(() => clearTimeout(timeoutId));
 

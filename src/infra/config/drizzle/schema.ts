@@ -48,6 +48,7 @@ export const apiKeys = pgTable("api_keys", {
   role: roleEnum("role").default("CLIENT").notNull(),
   webhookUrl: text("webhook_url"),
   allowedIp: text("allowed_ip"),
+  webhookSecret: text("webhook_secret"),
   isActive: boolean("isActive").default(true).notNull(),
   createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
 });
